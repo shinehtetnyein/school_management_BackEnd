@@ -1,0 +1,9 @@
+{
+    "Blog": true,
+    "User": true,
+    "Admin": true,
+    "Accountant": true,
+    "Parent": true,
+    "Student": true,
+    "Book": true
+}
