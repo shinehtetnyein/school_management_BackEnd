@@ -1,4 +1,5 @@
 <?php
+namespace Modules\Authentication\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;

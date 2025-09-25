@@ -1,5 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Route;
 
-Route::post("/login",[AuthenticationApiController::class,'login']);
 Route::post('/register',[AuthenticationApiController::class,'register']);
+Route::get('/login', [AuthenticationApiController::class, 'login'])->middleware('auth:sanctum');
