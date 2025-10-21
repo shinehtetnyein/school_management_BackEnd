@@ -50,7 +50,7 @@ class GenerateRolesAndPermissions extends Command
 
     private function generatePermissions(): void
     {
-        $config = config('permissions', []); // Use 'permissions' config from earlier
+    $config = config('role&permission', []); // Use 'role&permission' config
         $defaultGuard = $config['default-guard'] ?? 'api';
         $commonActions = $config['common-actions'] ?? ['view', 'create', 'edit', 'delete'];
         $permissionsFromConfig = $config['permissions'] ?? [];
@@ -83,7 +83,7 @@ class GenerateRolesAndPermissions extends Command
 
     private function generateRoles(): void
     {
-        $config = config('permissions', []);
+    $config = config('role&permission', []);
         $defaultGuard = $config['default-guard'] ?? 'api';
         $rolesFromConfig = $config['roles'] ?? [];
 

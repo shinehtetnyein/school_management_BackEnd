@@ -2,10 +2,17 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    Modules\Accountant\app\Providers\AccountantServiceProvider::class,
-    Modules\Admin\app\Providers\AdminServiceProvider::class,
-    Modules\Authentication\app\Providers\AuthenticationServiceProvider::class,
-    Modules\Parent\app\Providers\ParentServiceProvider::class,
-    Modules\Student\app\Providers\StudentServiceProvider::class,
+    Nwidart\Modules\LaravelModulesServiceProvider::class,
     Modules\Users\User\App\Providers\UserServiceProvider::class,
+    Modules\Users\Teacher\App\Providers\TeacherServiceProvider::class,
+    Modules\Attendance\App\Providers\AttendanceServiceProvider::class,
+    Modules\Users\Accountant\App\Providers\AccountantServiceProvider::class,
+    Modules\Users\Librarian\App\Providers\LibrarianServiceProvider::class,
+    Modules\Courses\App\Providers\CourseServiceProvider::class,
+    Modules\Results\App\Providers\ResultServiceProvider::class,
+    Modules\Subjects\App\Providers\SubjectServiceProvider::class,
+    Modules\Departments\app\Providers\DepartmentServiceProvider::class,
+    Modules\Exams\app\Providers\ExamsServiceProvider::class,
+    Modules\Library\app\Providers\LibraryServiceProvider::class,
+    Modules\Homework\app\Providers\HomeworkServiceProvider::class,
 ];

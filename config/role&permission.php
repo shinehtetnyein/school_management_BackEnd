@@ -182,6 +182,36 @@ return [
             ],
         ],
 
+        'Parent' => [
+            'permissions' => [
+                'courses.view',
+                'subjects.view',
+                'classrooms.view',
+                'timetables.view',
+                'attendance.view',
+                'exams.view',
+                'exam-results.view',
+                'homework.view',
+                'events.view',
+                'books.view',
+                'borrow-records.view',
+                'resources.view',
+                'payments.create',
+                'accounts.view',
+                'communication.view', 'communication.send', 'communication.reply',
+                'enrollments.view',
+            ],
+        ],
+
+        'Librarian' => [
+            'permissions' => [
+                'books.view', 'books.create', 'books.edit', 'books.delete', 'books.borrow', 'books.return',
+                'borrow-records.view', 'borrow-records.create', 'borrow-records.edit', 'borrow-records.fine',
+                'resources.view', 'resources.allocate',
+                'communication.view', 'communication.send',
+            ],
+        ],
+
         'Guest' => [
             'permissions' => [
                 'courses.view',
