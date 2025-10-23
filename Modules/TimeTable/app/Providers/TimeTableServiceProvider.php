@@ -1,21 +1,21 @@
 <?php
 
-namespace Modules\Exams\App\Providers;
+namespace Modules\Courses\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Exams\Services\ExamApiServiceInterface;
-use Modules\Exams\Services\Implementations\ExamApiService;
+use Modules\Courses\Services\TimeTableApiServiceInterface;
+use Modules\Users\Student\Services\Implementations\TimeTableApiService;
 
-class ExamsServiceProvider extends ServiceProvider
+class TimeTableServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->app->bind(ExamApiServiceInterface::class, ExamApiService::class);
-
+        // Note: The implementation class seems to be StudentApiService based on the provided context files.
+        $this->app->bind(TimeTableApiServiceInterface::class, TimeTableApiService::class);
     }
 
     /**

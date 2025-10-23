@@ -1,20 +1,20 @@
 <?php
 
-namespace Modules\Users\User\app\Providers;
+namespace Modules\Users\Students\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Users\User\Services\Implementations\UserApiService;
-use Modules\Users\User\Services\UserApiServiceInterface;
+use Modules\Users\Students\Services\Implementations\StudentApiService;
+use Modules\Users\Students\Services\StudentApiServiceInterface;
 
-class UserServiceProvider extends ServiceProvider
+class StuffServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
      */
     public function register(): void
     {
-        $this->app->bind(UserApiServiceInterface::class, UserApiService::class);
+        $this->app->bind(StudentApiServiceInterface::class, StudentApiService::class);
     }
 
     /**

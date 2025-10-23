@@ -4,6 +4,8 @@ namespace Modules\Departments\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Modules\Departments\Services\DepartmentApiServiceInterface;
+use Modules\Departments\Services\Implementations\DepartmentApiService;
 
 class DepartmentServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,7 @@ class DepartmentServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Bind your interfaces to implementations here
+        $this->app->bind(DepartmentApiServiceInterface::class, DepartmentApiService::class);
     }
 
     /**

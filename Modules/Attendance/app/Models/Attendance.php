@@ -1,12 +1,22 @@
 <?php
 
-namespace Modules\Attendance\Models;
+namespace Modules\Attendance\app\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Courses\Models\Course;
+use Modules\Users\User\Models\User;
 
 class Attendance extends Model
 {
-    protected $table = 'attendances';
+    protected $fillable = ['date', 'status', 'verification_method', 'user_id', 'course_id'];
 
-    protected $fillable = ['user_id', 'course_id', 'date', 'status', 'remarks'];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'course_id');
+    }
 }

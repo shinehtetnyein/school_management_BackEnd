@@ -5,7 +5,7 @@ namespace Modules\Courses\App\Providers;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Modules\Courses\Services\CourseApiServiceInterface;
-use Modules\Users\Student\Services\Implementations\CourseApiService;
+use Modules\Courses\Services\Implementations\CourseApiService;
 
 class CourseServiceProvider extends ServiceProvider
 {

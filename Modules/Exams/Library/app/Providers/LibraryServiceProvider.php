@@ -1,21 +1,20 @@
 <?php
 
-namespace Modules\Exams\App\Providers;
+namespace Modules\Library\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Exams\Services\ExamApiServiceInterface;
-use Modules\Exams\Services\Implementations\ExamApiService;
+use Modules\Library\Services\Implementations\LibraryApiService;
+use Modules\Library\Services\LibraryApiServiceInterface;
 
-class ExamsServiceProvider extends ServiceProvider
+class LibraryServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->app->bind(ExamApiServiceInterface::class, ExamApiService::class);
-
+        $this->app->bind(LibraryApiServiceInterface::class, LibraryApiService::class);
     }
 
     /**

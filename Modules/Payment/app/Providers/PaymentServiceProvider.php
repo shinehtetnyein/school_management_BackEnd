@@ -1,21 +1,18 @@
 <?php
 
-namespace Modules\Exams\App\Providers;
+namespace Modules\Payment\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Exams\Services\ExamApiServiceInterface;
-use Modules\Exams\Services\Implementations\ExamApiService;
 
-class ExamsServiceProvider extends ServiceProvider
+class PaymentServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->app->bind(ExamApiServiceInterface::class, ExamApiService::class);
-
+        // Bind your interfaces to implementations here
     }
 
     /**

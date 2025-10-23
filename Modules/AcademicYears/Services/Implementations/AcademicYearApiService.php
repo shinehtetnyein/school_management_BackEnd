@@ -2,8 +2,8 @@
 
 namespace Modules\AcademicYears\Services\Implementations;
 
+use Modules\AcademicYears\app\Models\AcademicYear;
 use Modules\AcademicYears\Services\AcademicYearApiServiceInterface;
-use Modules\AcademicYears\Models\AcademicYear;
 
 class AcademicYearApiService implements AcademicYearApiServiceInterface
 {

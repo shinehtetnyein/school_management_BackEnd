@@ -4,6 +4,8 @@ namespace Modules\Homework\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Modules\Homework\Services\HomeworkApiServiceInterface;
+use Modules\Homework\Services\Implementations\HomeworkApiService;
 
 class HomeworkServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,7 @@ class HomeworkServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Bind your interfaces to implementations here
+        $this->app->bind(HomeworkApiServiceInterface::class, HomeworkApiService::class);
     }
 
     /**

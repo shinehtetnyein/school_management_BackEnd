@@ -1,0 +1,39 @@
+<?php
+
+namespace Modules\Users\Admin\App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Modules\Courses\Services\CourseApiServiceInterface;
+
+class StoreTimeTableRequest extends FormRequest
+{
+    public function __construct(protected CourseApiServiceInterface $courseApiService) {}
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        $userId = Auth::user()->id;
+        $admin = $this->courseApiService->get($userId);
+        if (!$admin) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'name' => 'required',
+            'faculty_id' => 'required|exists:faculties,id',
+            'password' => 'required|confirmed',
+            'email' => 'required|unique:users,email'
+        ];
+    }
+}
