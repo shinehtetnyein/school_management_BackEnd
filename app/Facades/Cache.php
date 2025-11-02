@@ -9,6 +9,6 @@ class Cache extends Facade
 
     protected static function getFacadeAccessor()
     {
-        return 'future_cache';
+        return 'cache';
     }
 }

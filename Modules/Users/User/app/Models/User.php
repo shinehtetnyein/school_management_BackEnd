@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Users\User\Models;
+namespace Modules\Users\User\App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -17,6 +17,8 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasApiTokens, Notifiable, HasRoles;
+
+    protected $guard_name = 'sanctum'; // match your roles
 
     protected $appends = ['role'];
 

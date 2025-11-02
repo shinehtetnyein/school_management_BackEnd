@@ -1,9 +1,9 @@
 <?php
 
-namespace Modules\Result\Http\Controllers;
+namespace Modules\Results\app\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;;
 use Modules\Results\Services\ResultApiServiceInterface;
 
 class ResultApiController extends Controller

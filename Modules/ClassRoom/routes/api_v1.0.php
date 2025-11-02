@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Subjects\app\Http\Controllers\SubjectApiController;
+use Modules\ClassRoom\app\Http\Controllers\ClassRoomApiController;
 
-Route::apiResource('classrooms', SubjectApiController::class);
+Route::apiResource('classrooms', ClassRoomApiController::class);
 

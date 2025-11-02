@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Attendance\Http\Controllers;
+namespace Modules\Attendance\app\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Attendance\Services\AttendanceApiServiceInterface;
 
-class AttendanceController extends Controller
+class AttendanceApiController extends Controller
 {
     protected AttendanceApiServiceInterface $service;
 

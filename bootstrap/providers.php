@@ -3,6 +3,7 @@
 return [
     App\Providers\AppServiceProvider::class,
     Nwidart\Modules\LaravelModulesServiceProvider::class,
+    Modules\Authentication\App\Providers\AuthenticationServiceProvider::class,
     Modules\Users\User\App\Providers\UserServiceProvider::class,
     Modules\Users\Teacher\App\Providers\TeacherServiceProvider::class,
     Modules\Attendance\App\Providers\AttendanceServiceProvider::class,

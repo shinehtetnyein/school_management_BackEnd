@@ -1,13 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Attendance\Http\Controllers\AttendanceController;
+use Modules\Attendance\app\Http\Controllers\AttendanceApiController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('attendances', AttendanceController::class);
+    Route::apiResource('attendances', AttendanceApiController::class);
 
     // Additional attendance routes
-    Route::get('attendances/student/{studentId}', [AttendanceController::class, 'getStudentAttendance']);
-    Route::get('attendances/class/{classId}', [AttendanceController::class, 'getClassAttendance']);
-    Route::post('attendances/bulk', [AttendanceController::class, 'bulkStore']);
-});
+    Route::get('attendances/student/{studentId}', [AttendanceApiController::class, 'getStudentAttendance']);
+    Route::get('attendances/class/{classId}', [AttendanceApiController::class, 'getClassAttendance']);
+    Route::post('attendances/bulk', [AttendanceApiController::class, 'bulkStore']);

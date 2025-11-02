@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use Modules\Users\User\App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role as SpatieRole;
+use App\Console\Enums\Role as RoleEnum;
 
 class DevUsersSeeder extends Seeder
 {
@@ -13,79 +15,59 @@ class DevUsersSeeder extends Seeder
      */
     public function run(): void
     {
-        // Safety: do not run this seeder in production
         if (app()->environment('production')) {
             $this->command->warn('DevUsersSeeder will not run in production.');
             return;
         }
 
-        // Ask for confirmation
-        if (! $this->command->confirm('This will create development users (Parent, Librarian, Teacher, Student, Admin, Root Admin). Continue?', true)) {
+        if (!$this->command->confirm('This will create development users and roles. Continue?', true)) {
             $this->command->warn('Dev user seeding cancelled.');
             return;
         }
-        $this->command->info('Creating development users: Root Admin, Admin, Parent, Librarian, Teacher, Student');
 
-        // Parent user
-        $parent = User::firstOrCreate(
-            ['email' => 'parent@example.com'],
-            [
-                'name' => 'Parent User',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $parent->assignRole('Parent');
+        $this->command->info('Creating roles with guard "sanctum"...');
 
-        // Librarian user
-        $librarian = User::firstOrCreate(
-            ['email' => 'librarian@example.com'],
-            [
-                'name' => 'Librarian User',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $librarian->assignRole('Librarian');
+        // Ensure all roles exist with the correct guard
+        foreach (RoleEnum::cases() as $roleEnum) {
+            $role = SpatieRole::firstOrCreate(
+                ['name' => $roleEnum->label()],
+                ['guard_name' => 'sanctum']
+            );
 
-        // Teacher user
-        $teacher = User::firstOrCreate(
-            ['email' => 'teacher@example.com'],
-            [
-                'name' => 'Teacher User',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $teacher->assignRole('Teacher');
+            // Fix any roles that may already exist with wrong guard
+            if ($role->guard_name !== 'sanctum') {
+                $role->guard_name = 'sanctum';
+                $role->save();
+            }
+        }
 
-        // Student user
-        $student = User::firstOrCreate(
-            ['email' => 'student@example.com'],
-            [
-                'name' => 'Student User',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $student->assignRole('Student');
+        $this->command->info('Creating users and assigning roles...');
 
-        // Admin user
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Admin User',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $admin->assignRole('Admin');
+        // Users to create
+        $users = [
+            'parent@gmail.com' => RoleEnum::PARENT,
+            'librarian@gmail.com' => RoleEnum::LIBRARIAN,
+            'teacher@gmail.com' => RoleEnum::TEACHER,
+            'student@gmail.com' => RoleEnum::STUDENT,
+            'admin@gmail.com' => RoleEnum::ADMIN,
+            'root@gmail.com' => RoleEnum::ROOT_ADMIN,
+        ];
 
-        // Root Admin user
-        $root = User::firstOrCreate(
-            ['email' => 'root@example.com'],
-            [
-                'name' => 'Root Admin',
-                'password' => Hash::make('password'),
-            ]
-        );
-        $root->assignRole('Root Admin');
+        foreach ($users as $email => $roleEnum) {
+            $user = User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $roleEnum->label() . ' User',
+                    'password' => Hash::make('password'),
+                ]
+            );
 
-        $this->command->info('Dev users created (password for all is "password").');
+            // Assign role only if not already assigned
+            if (!$user->hasRole($roleEnum->label(), 'sanctum')) {
+                $user->assignRole($roleEnum->label());
+            }
+        }
+
+        $this->command->info('Dev users and roles created successfully (password for all: "password").');
     }
 }

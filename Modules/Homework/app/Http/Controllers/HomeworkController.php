@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Homework\Http\Controllers;
+namespace Modules\Homework\app\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

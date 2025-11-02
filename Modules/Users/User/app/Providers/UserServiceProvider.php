@@ -4,6 +4,7 @@ namespace Modules\Users\User\app\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Modules\Users\User\App\Http\Controllers\UserApiController;
 use Modules\Users\User\Services\Implementations\UserApiService;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
@@ -24,9 +25,7 @@ class UserServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
         Route::prefix('api/v1')
-            ->middleware('api') // Apply any middleware if needed
-            ->group(function () {
-                require __DIR__ . '/../../routes/api_v1.0.php';
-            });
+            ->middleware('api')
+            ->group(__DIR__ . '/../../routes/api_v1.0.php');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Config\Cache;
+namespace App\Config;
 
 class UserCache
 {

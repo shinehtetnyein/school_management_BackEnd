@@ -4,6 +4,8 @@ namespace Modules\Results\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Modules\Results\Services\ResultApiServiceInterface;
+use Modules\Users\User\Services\Implementations\UserApiService;
 
 class ResultServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,7 @@ class ResultServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Bind your interfaces to implementations here
+        $this->app->bind(ResultApiServiceInterface::class, UserApiService::class);
     }
 
     /**

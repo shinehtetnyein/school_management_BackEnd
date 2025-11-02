@@ -2,188 +2,83 @@
 
 namespace Modules\Users\User\Services\Implementations;
 
-use App\Config\Cache\UserCache;
-use App\Enums\Role;
-use App\Facades\Cache;
-use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
-use Modules\Users\User\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Modules\Users\User\app\Models\User;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiService implements UserApiServiceInterface
 {
-    public function get($id = null, $relations = null, $conds = null)
+    /**
+     * Retrieve a single user by ID with optional relations
+     */
+    public function get($id, array $relations = [])
     {
-        $params = [$id, $relations, $conds];
-        return Cache::remember(UserCache::GET_KEY, UserCache::GET_EXPIRY, $params, function () use ($id, $relations, $conds) {
-            return User::query() // No need for ::on(), Laravel handles it.
-                ->when($id, function ($q, $id) {
-                    $q->where(User::id, $id);
-                })
-                ->when($relations, function ($q, $relations) {
-                    $q->with($relations);
-                })
-                ->when($conds, function ($q, $conds) {
-                    $this->searching($q, $conds);
-                })
-                ->first();
-        });
+        return User::with($relations)->findOrFail($id);
     }
 
-    public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null)
-    {
-        $params = [$relations, $limit, $offset, $noPagination, $pagPerPage, $conds];
-        return Cache::remember(UserCache::GET_ALL_KEY, UserCache::GET_ALL_EXPIRY, $params, function () use ($relations, $limit, $offset, $noPagination, $pagPerPage, $conds) {
-            $users = User::query() // No need for ::on(), Laravel handles it.
-                ->when($relations, function ($q, $relations) {
-                    $q->with($relations);
-                })
-                ->when($limit, function ($q, $limit) {
-                    $q->limit($limit);
-                })
-                ->when($offset, function ($q, $offset) {
-                    $q->offset($offset);
-                })
-                ->when($conds, function ($q, $conds) {
-                    $this->searching($q, $conds);
-                });
+    /**
+     * Retrieve all users with optional pagination and relations
+     */
+    public function getAll(
+        array $relations = [],
+        ?int $limit = null,
+        ?int $offset = null,
+        ?bool $noPagination = false,
+        ?int $pagPerPage = null
+    ) {
+        $query = User::with($relations)->orderBy('id', 'desc');
 
-            if (($noPagination !== null && !$noPagination) || $pagPerPage) {
-                return $users->paginate($pagPerPage ?? config('constants.pagPerPage'));
-            } else {
-                return $users->get();
-            }
-        });
+        if ($noPagination) {
+            return $query->get();
+        }
+
+        if ($pagPerPage) {
+            return $query->paginate($pagPerPage);
+        }
+
+        if ($limit !== null && $offset !== null) {
+            return $query->skip($offset)->take($limit)->get();
+        }
+
+        return $query->get();
     }
 
-    public function create($userData)
+    /**
+     * Create a new user
+     */
+    public function create(array $userData)
     {
-        $user = DB::transaction(function () use ($userData) {
-            $user = $this->createUser($userData);
-            $this->assignRole($user, $userData['role']);
-            return $user;
-        });
+        if (!empty($userData['password'])) {
+            $userData['password'] = Hash::make($userData['password']);
+        }
 
-        Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
+        return User::create($userData);
+    }
+
+    /**
+     * Update an existing user by ID
+     */
+    public function update($id, array $userData)
+    {
+        $user = User::findOrFail($id);
+
+        if (!empty($userData['password'])) {
+            $userData['password'] = Hash::make($userData['password']);
+        }
+
+        $user->update($userData);
+
         return $user;
     }
 
-    public function update($id, $userData)
-    {
-        $user = DB::transaction(function () use ($id, $userData) {
-            $user = $this->updateUser($id, $userData);
-            if (isset($userData['role'])) {
-                $this->updateRole($user, $userData['role']);
-            }
-            return $user;
-        });
-
-        Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
-        return $user;
-    }
-
+    /**
+     * Delete a user by ID
+     */
     public function delete($id)
     {
-        $name = DB::transaction(function () use ($id) {
-            $this->removeForeignTableData($id);
-            return $this->deleteUser($id);
-        });
-
-        Cache::clear([UserCache::GET_ALL_KEY, UserCache::GET_KEY]);
-        return $name;
-    }
-
-    ////////////////////////////////////////////////////////////////////
-    /// Private Functions
-    ////////////////////////////////////////////////////////////////////
-
-    //-------------------------------------------------------------------
-    // Database
-    //-------------------------------------------------------------------
-    private function createUser($userData)
-    {
-        $user = new User();
-        $user->fill($userData);
-        $user->save();
-
-        return $user;
-    }
-
-    private function updateUser($id, $userData)
-    {
-        // findOrFail will use the WRITE connection because it's inside a transaction.
         $user = User::findOrFail($id);
-
-        $user->fill($userData);
-        $user->save();
-
-        return $user;
-    }
-
-    private function deleteUser($id)
-    {
-        // findOrFail will use the WRITE connection because it's inside a transaction.
-        $user = User::findOrFail($id);
-        $name = $user->name;
         $user->delete();
 
-        return $name;
-    }
-
-    private function removeForeignTableData($id)
-    {
-        // findOrFail will use the WRITE connection because it's inside a transaction.
-        $user = User::findOrFail($id);
-        $user->saved_articles()->detach();
-        $user->saved_contributions()->detach();
-        $user->contribution_comments()->detach();
-        $user->contribution_votes()->detach();
-    }
-
-    private function searching(Builder $query, $conds)
-    {
-        $query
-            ->when(isset($conds['role']), function ($q) use ($conds) {
-                $q->whereHas('roles', function ($query) use ($conds) {
-                    $query->where('name', $conds['role']);
-                });
-            })
-            ->when(isset($conds['email']), function ($q) use ($conds) {
-                $q->where(User::email, $conds['email']);
-            })
-            ->when(isset($conds['academic_year_id']), function ($q) use ($conds) {
-                $q->where(User::academic_year_id, $conds['academic_year_id']);
-            });
-
-        return $query;
-    }
-
-    //-------------------------------------------------------------------
-    // Others
-    //-------------------------------------------------------------------
-    private function assignRole(User $user, $role)
-    {
-        $role = $this->checkRole($role);
-
-        $user->assignRole($role->label());
-    }
-
-    private function updateRole(User $user, $role)
-    {
-        $role = $this->checkRole($role);
-
-        $user->roles()->detach();
-
-        $user->assignRole($role->label());
-    }
-
-    private function checkRole($role)
-    {
-        $role = Role::tryFrom($role);
-        if (!$role) {
-            throw new Exception('Invalid Role');
-        }
-        return $role;
+        return $user->name ?? "User #{$id}";
     }
 }

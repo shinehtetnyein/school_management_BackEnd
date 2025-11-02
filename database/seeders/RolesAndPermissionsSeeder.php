@@ -22,13 +22,17 @@ class RolesAndPermissionsSeeder extends Seeder
         $commonActions = $config['common-actions'] ?? ['view', 'create', 'edit', 'delete'];
         $permissionsFromConfig = $config['permissions'] ?? [];
 
-        // Truncate permission/role tables safely
+        // Forget cached permissions
         app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        // Safely clear tables by disabling foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('model_has_permissions')->truncate();
+        DB::table('model_has_roles')->truncate();
+        DB::table('role_has_permissions')->truncate();
         Permission::truncate();
         Role::truncate();
-    DB::table('role_has_permissions')->truncate();
-    DB::table('model_has_permissions')->truncate();
-    DB::table('model_has_roles')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // Create permissions
         $permissionRecords = [];
