@@ -2,10 +2,14 @@
 
 namespace Modules\Authentication\App\Http\Controllers;
 
+use App\Console\Enums\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Modules\Users\User\App\Http\Resources\UserApiResource;
+
+use function Laravel\Prompts\error;
 
 class AuthenticationApiController extends Controller
 {
@@ -31,17 +35,28 @@ class AuthenticationApiController extends Controller
 public function login(Request $request)
 {
     $validated = $request->validate([
-        'email' => 'required|email',
+        'email'    => 'required|email',
         'password' => 'required|string',
-        'role' => 'required|in:student,teacher,admin',
+        'role'     => ['required'],
     ]);
 
-    $result = $this->authService->login($validated);
+    try {
+        $result = $this->authService->login($validated);
 
-    return apiResponse(true, 'Login successful', [
-        'user' => new UserApiResource($result['user']),
-        'token' => $result['token']
-    ]);
+        return apiResponse(true, 'Login successful', [
+            'user'  => new UserApiResource($result['user']),
+            'token' => $result['token'],
+        ]);
+
+    } catch (ValidationException $e) {
+        return apiResponse(false, 'Login failed', null, 403, $e->errors());
+    } catch (\Exception $e) {
+        return apiResponse(false, 'Something went wrong', null, 500, [
+            'exception' => [$e->getMessage()]
+        ]);
+    }
 }
+
+
 
 }

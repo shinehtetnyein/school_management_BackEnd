@@ -26,6 +26,7 @@ class LoginApiRequest extends FormRequest
         return [
             'email'    => 'required|email',
             'password' => 'required',
+            'role'=> 'required,in:student,teacher,admin',
         ];
     }
 }

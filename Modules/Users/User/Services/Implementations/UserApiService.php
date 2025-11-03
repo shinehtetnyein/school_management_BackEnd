@@ -3,30 +3,29 @@
 namespace Modules\Users\User\Services\Implementations;
 
 use Illuminate\Support\Facades\Hash;
-use Modules\Users\User\app\Models\User;
+use Modules\Users\User\App\Models\User;
 use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiService implements UserApiServiceInterface
 {
     /**
-     * Retrieve a single user by ID with optional relations
+     * Retrieve a single user by ID
      */
-    public function get($id, array $relations = [])
+    public function get($id)
     {
-        return User::with($relations)->findOrFail($id);
+        return User::findOrFail($id);
     }
 
     /**
-     * Retrieve all users with optional pagination and relations
+     * Retrieve all users with optional pagination
      */
     public function getAll(
-        array $relations = [],
         ?int $limit = null,
         ?int $offset = null,
         ?bool $noPagination = false,
         ?int $pagPerPage = null
     ) {
-        $query = User::with($relations)->orderBy('id', 'desc');
+        $query = User::orderBy('id', 'desc');
 
         if ($noPagination) {
             return $query->get();
@@ -77,8 +76,9 @@ class UserApiService implements UserApiServiceInterface
     public function delete($id)
     {
         $user = User::findOrFail($id);
+        $userName = $user->name ?? "User #{$id}";
         $user->delete();
 
-        return $user->name ?? "User #{$id}";
+        return $userName;
     }
 }

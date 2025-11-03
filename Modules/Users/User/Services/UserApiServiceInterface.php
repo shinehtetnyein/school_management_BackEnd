@@ -4,10 +4,10 @@ namespace Modules\Users\User\Services;
 
 interface UserApiServiceInterface
 {
-    public function get($id, array $relations = []);
+    public function get($id);
 
     public function getAll(
-        array $relations = [],
+        // array $relations = [],
         ?int $limit = null,
         ?int $offset = null,
         ?bool $noPagination = false,

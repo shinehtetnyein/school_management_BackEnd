@@ -2,6 +2,7 @@
 
 namespace Modules\Authentication\Services\Implementations;
 
+use App\Console\Enums\Role;
 use Illuminate\Support\Facades\Hash;
 use Modules\Authentication\Services\AuthenticationApiServiceInterface;
 use Illuminate\Validation\ValidationException;
@@ -33,7 +34,7 @@ class AuthenticationApiService implements AuthenticationApiServiceInterface
     /**
      * Login user and return token with role
      */
-    public function login(array $credentials)
+public function login(array $credentials)
 {
     $user = User::where('email', $credentials['email'])->first();
 
@@ -43,15 +44,52 @@ class AuthenticationApiService implements AuthenticationApiServiceInterface
         ]);
     }
 
-    // Ensure user has at least one role
-    if ($user->getRoleNames()->isEmpty()) {
-        $user->assignRole('student'); // default role
+    // Requested role
+    $requestedRole = $credentials['role'] ?? null;
+
+    if (!$requestedRole) {
+        throw ValidationException::withMessages([
+            'role' => ['Role is required for login.']
+        ]);
+    }
+
+    // Map simple enum/slug to DB role name
+    $roleMap = [
+        'root_admin' => 'Root Admin',
+        'admin'      => 'Admin',
+        'teacher'    => 'Teacher',
+        'student'    => 'Student',
+        'parent'     => 'Parent',
+        'librarian'  => 'Librarian',
+        'guest'      => 'Guest',
+        'accountant' => 'Accountant',
+    ];
+
+    if (!array_key_exists($requestedRole, $roleMap)) {
+        throw ValidationException::withMessages([
+            'role' => ['The selected role is invalid.']
+        ]);
+    }
+
+    $dbRoleName = $roleMap[$requestedRole];
+
+    if (!$user->hasRole($dbRoleName)) {
+        throw ValidationException::withMessages([
+            'role' => ['You are not authorized for this role.']
+        ]);
     }
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    return ['user' => $user, 'token' => $token];
+    return [
+        'user' => $user,
+        'roles' => $user->getRoleNames(),
+        'token' => $token,
+    ];
 }
+
+
+
 
     /**
      * Logout user (delete current access token)

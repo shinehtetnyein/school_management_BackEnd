@@ -11,8 +11,6 @@ use Modules\Users\User\Services\UserApiServiceInterface;
 
 class UserApiController extends Controller
 {
-    protected array $userApiRelations = ['saved_contributions', 'saved_articles'];
-
     public function __construct(protected UserApiServiceInterface $userApiService) {}
 
     /**
@@ -24,7 +22,6 @@ class UserApiController extends Controller
         [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
 
         $users = $this->userApiService->getAll(
-            $this->userApiRelations,
             $limit,
             $offset,
             $noPagination,
@@ -34,7 +31,7 @@ class UserApiController extends Controller
         $data = [
             'users' => ($noPagination || $pagPerPage)
                 ? UserApiResource::collection($users)
-                : UserApiResource::collection($users)->response()->getData(true)
+                : UserApiResource::collection($users)->response()->getData(true),
         ];
 
         return apiResponse(true, 'Data retrieved successfully', $data);
@@ -48,11 +45,9 @@ class UserApiController extends Controller
         $validatedData = $request->validated();
         $user = $this->userApiService->create($validatedData);
 
-        $data = [
-            'user' => new UserApiResource($user)
-        ];
-
-        return apiResponse(true, 'User created successfully', $data);
+        return apiResponse(true, 'User created successfully', [
+            'user' => new UserApiResource($user),
+        ]);
     }
 
     /**
@@ -60,13 +55,11 @@ class UserApiController extends Controller
      */
     public function show(string $id)
     {
-        $user = $this->userApiService->get($id, $this->userApiRelations);
+        $user = $this->userApiService->get($id);
 
-        $data = [
-            'user' => new UserApiResource($user)
-        ];
-
-        return apiResponse(true, 'Data retrieved successfully', $data);
+        return apiResponse(true, 'Data retrieved successfully', [
+            'user' => new UserApiResource($user),
+        ]);
     }
 
     /**
@@ -77,11 +70,9 @@ class UserApiController extends Controller
         $validatedData = $request->validated();
         $user = $this->userApiService->update($id, $validatedData);
 
-        $data = [
-            'user' => new UserApiResource($user)
-        ];
-
-        return apiResponse(true, 'User updated successfully', $data);
+        return apiResponse(true, 'User updated successfully', [
+            'user' => new UserApiResource($user),
+        ]);
     }
 
     /**
@@ -91,10 +82,8 @@ class UserApiController extends Controller
     {
         $deletedName = $this->userApiService->delete($id);
 
-        $data = [
-            'name' => $deletedName
-        ];
-
-        return apiResponse(true, 'User deleted successfully', $data);
+        return apiResponse(true, 'User deleted successfully', [
+            'name' => $deletedName,
+        ]);
     }
 }

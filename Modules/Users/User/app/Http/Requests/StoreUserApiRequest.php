@@ -2,7 +2,7 @@
 
 namespace Modules\Users\User\App\Http\Requests;
 
-use App\Enums\Role;
+use App\Console\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,8 +28,6 @@ class StoreUserApiRequest extends FormRequest
             'email'    => 'required|email|unique:users',
             'password' => 'required|min:6',
             'role'     => ['required', Rule::in(Role::values())],
-            'faculty_id' => 'required|string',
-            'academic_year_id' => 'nullable|exists:academic_years,id'
         ];
     }
 }
