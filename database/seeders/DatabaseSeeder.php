@@ -7,6 +7,11 @@ use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\DevUsersSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\AcademicYears\Database\Seeders\AcademicYearSeeder;
+use Modules\Course\Database\Seeders\CourseSeeder;
+use Modules\Course\Database\Seeders\EnrollmentSeeder;
+use Modules\Subject\Database\Seeders\CourseSubjectSeeder;
+use Modules\Subject\Database\Seeders\SubjectSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +30,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create development users (parent, librarian, teacher, student)
-        $this->call(DevUsersSeeder::class);
+        $this->call([
+            DevUsersSeeder::class,
+            AcademicYearSeeder::class,
+            CourseSeeder::class,
+            EnrollmentSeeder::class,
+            SubjectSeeder::class,
+            CourseSubjectSeeder::class,
+        ]);
     }
 }

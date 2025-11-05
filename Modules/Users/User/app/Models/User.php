@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Modules\Courses\Models\Course;
+use Modules\Course\App\Models\Course;
 use Modules\Results\Models\Result;
-use Modules\Subjects\Models\Subject;
+use Modules\Subject\App\Models\Subject;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable

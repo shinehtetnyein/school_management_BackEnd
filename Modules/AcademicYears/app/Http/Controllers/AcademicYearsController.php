@@ -1,56 +1,208 @@
 <?php
 
-namespace Modules\AcademicYears\app\Http\Controllers;
+namespace Modules\AcademicYears\App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Modules\AcademicYears\Services\AcademicYearApiServiceInterface;
+use Modules\AcademicYears\App\Http\Requests\StoreAcademicYearRequest;
+use Modules\AcademicYears\App\Http\Requests\UpdateAcademicYearRequest;
+use Modules\AcademicYears\App\Http\Resources\AcademicYearResource;
 
 class AcademicYearsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $academicYearService;
+
+    public function __construct(AcademicYearApiServiceInterface $academicYearService)
     {
-        return view('academicyears::index');
+        $this->academicYearService = $academicYearService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index(Request $request): JsonResponse
     {
-        return view('academicyears::create');
+        try {
+            [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+
+            // Fix: Ensure $pagPerPage is never null and has a default value
+            $perPage = $pagPerPage ?? 10;
+
+            if ($noPagination) {
+                $academicYears = $this->academicYearService->getAllAcademicYears();
+                $data = AcademicYearResource::collection($academicYears);
+            } else {
+                $academicYears = $this->academicYearService->getAcademicYearsPaginated((int)$perPage);
+                $data = AcademicYearResource::collection($academicYears);
+            }
+
+            return apiResponse(
+                true,
+                'Academic years retrieved successfully.',
+                $data
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to retrieve academic years.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function store(StoreAcademicYearRequest $request): JsonResponse
     {
-        return view('academicyears::show');
+        try {
+            $validated = $request->validated();
+            $academicYear = $this->academicYearService->createAcademicYear($validated);
+
+            return apiResponse(
+                true,
+                'Academic year created successfully.',
+                new AcademicYearResource($academicYear),
+                201
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to create academic year.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    public function show(int $id): JsonResponse
     {
-        return view('academicyears::edit');
+        try {
+            $academicYear = $this->academicYearService->getAcademicYearById($id);
+
+            if (!$academicYear) {
+                return apiResponse(
+                    false,
+                    'Academic year not found.',
+                    null,
+                    404
+                );
+            }
+
+            return apiResponse(
+                true,
+                'Academic year retrieved successfully.',
+                new AcademicYearResource($academicYear)
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to retrieve academic year.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
+    public function update(UpdateAcademicYearRequest $request, int $id): JsonResponse
+    {
+        try {
+            $validated = $request->validated();
+            $academicYear = $this->academicYearService->updateAcademicYear($id, $validated);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+            return apiResponse(
+                true,
+                'Academic year updated successfully.',
+                new AcademicYearResource($academicYear)
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to update academic year.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    public function destroy(int $id): JsonResponse
+    {
+        try {
+            $result = $this->academicYearService->deleteAcademicYear($id);
+
+            if ($result) {
+                return apiResponse(
+                    true,
+                    'Academic year deleted successfully.'
+                );
+            }
+
+            return apiResponse(
+                false,
+                'Failed to delete academic year.',
+                null,
+                500
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to delete academic year.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    public function setCurrent(int $id): JsonResponse
+    {
+        try {
+            $academicYear = $this->academicYearService->setCurrentAcademicYear($id);
+
+            return apiResponse(
+                true,
+                'Academic year set as current successfully.',
+                new AcademicYearResource($academicYear)
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to set current academic year.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    public function getCurrent(): JsonResponse
+    {
+        try {
+            $currentAcademicYear = $this->academicYearService->getCurrentAcademicYear();
+
+            if (!$currentAcademicYear) {
+                return apiResponse(
+                    false,
+                    'No current academic year set.',
+                    null,
+                    404
+                );
+            }
+
+            return apiResponse(
+                true,
+                'Current academic year retrieved successfully.',
+                new AcademicYearResource($currentAcademicYear)
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to retrieve current academic year.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
 }

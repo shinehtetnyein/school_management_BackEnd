@@ -2,75 +2,150 @@
 
 namespace Modules\AcademicYears\Services\Implementations;
 
-use Modules\AcademicYears\app\Models\AcademicYear;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Modules\AcademicYears\App\Models\AcademicYear;
 use Modules\AcademicYears\Services\AcademicYearApiServiceInterface;
 
 class AcademicYearApiService implements AcademicYearApiServiceInterface
 {
-    public function list(array $filters = [])
+    public function getAllAcademicYears(): array
     {
-        $query = AcademicYear::query();
-
-        if (isset($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
-
-        if (isset($filters['is_current'])) {
-            $query->where('is_current', $filters['is_current']);
-        }
-
-        if (isset($filters['active'])) {
-            $query->where('start_date', '<=', now())
-                  ->where('end_date', '>=', now());
-        }
-
-        return $query->orderBy('start_date', 'desc')->paginate(15);
+        return AcademicYear::select('academic_years.*')
+            ->with([
+                'createdBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                },
+                'updatedBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                }
+            ])
+            ->orderBy('start_date', 'desc')
+            ->get()
+            ->toArray();
     }
 
-    public function create(array $data)
+    public function getAcademicYearById(int $id): ?AcademicYear
     {
-        return AcademicYear::create($data);
+        return AcademicYear::select('academic_years.*')
+            ->with([
+                'createdBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                },
+                'updatedBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                },
+                'users' => function ($query) {
+                    $query->select('users.id', 'users.name', 'users.email');
+                }
+            ])
+            ->find($id);
     }
 
-    public function update(int $id, array $data)
+    public function createAcademicYear(array $data): AcademicYear
     {
-        $academicYear = $this->find($id);
-        $academicYear->update($data);
-        return $academicYear;
+        return DB::transaction(function () use ($data) {
+            // If setting as current, remove current from others
+            if (isset($data['is_current']) && $data['is_current']) {
+                AcademicYear::where('is_current', true)->update(['is_current' => false]);
+            }
+
+            return AcademicYear::create($data);
+        });
     }
 
-    public function delete(int $id)
+    public function updateAcademicYear(int $id, array $data): AcademicYear
     {
-        $academicYear = $this->find($id);
+        return DB::transaction(function () use ($id, $data) {
+            $academicYear = AcademicYear::findOrFail($id);
+
+            // If setting as current, remove current from others
+            if (isset($data['is_current']) && $data['is_current']) {
+                AcademicYear::where('is_current', true)
+                    ->where('id', '!=', $id)
+                    ->update(['is_current' => false]);
+            }
+
+            $academicYear->update($data);
+
+            return $academicYear->fresh(['createdBy:id,name,email', 'updatedBy:id,name,email']);
+        });
+    }
+
+    public function deleteAcademicYear(int $id): bool
+    {
+        $academicYear = AcademicYear::findOrFail($id);
+
+        // Prevent deletion of current academic year
+        if ($academicYear->is_current) {
+            throw new \Exception('Cannot delete the current academic year.');
+        }
+
         return $academicYear->delete();
     }
 
-    public function find(int $id)
+    public function setCurrentAcademicYear(int $id): AcademicYear
     {
-        return AcademicYear::findOrFail($id);
+        return DB::transaction(function () use ($id) {
+            // Remove current from all academic years
+            AcademicYear::where('is_current', true)->update(['is_current' => false]);
+
+            // Set the selected one as current
+            $academicYear = AcademicYear::findOrFail($id);
+            $academicYear->update(['is_current' => true]);
+
+            return $academicYear->fresh(['createdBy:id,name,email', 'updatedBy:id,name,email']);
+        });
     }
 
-    public function getCurrent()
+    public function getCurrentAcademicYear(): ?AcademicYear
     {
-        return AcademicYear::where('is_current', true)->first();
+        return AcademicYear::select('academic_years.*')
+            ->with([
+                'createdBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                },
+                'updatedBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                }
+            ])
+            ->current()
+            ->first();
     }
 
-    public function setCurrent(int $id)
+    public function getAcademicYearsPaginated(int $perPage = 10): LengthAwarePaginator
     {
-        $academicYear = $this->find($id);
-
-        // First, unset all current flags
-        AcademicYear::query()->update(['is_current' => false]);
-
-        // Set the new current year
-        $academicYear->update(['is_current' => true]);
-
-        return $academicYear;
+        return AcademicYear::select('academic_years.*')
+            ->with([
+                'createdBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                },
+                'updatedBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                }
+            ])
+            ->orderBy('start_date', 'desc')
+            ->paginate($perPage);
     }
 
-    public function getStatistics(int $id)
+    public function getAcademicYearsWithOptions(array $options = []): mixed
     {
-        $academicYear = $this->find($id);
-        return $academicYear->getStatistics();
+        $query = AcademicYear::select('academic_years.*')
+            ->with([
+                'createdBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                },
+                'updatedBy' => function ($query) {
+                    $query->select('id', 'name', 'email');
+                }
+            ])
+            ->orderBy('start_date', 'desc');
+
+        if (isset($options['no_pagination']) && $options['no_pagination']) {
+            return $query->get();
+        }
+
+        $perPage = $options['per_page'] ?? 10;
+        return $query->paginate($perPage);
     }
 }
