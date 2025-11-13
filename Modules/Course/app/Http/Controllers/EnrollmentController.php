@@ -22,7 +22,7 @@ class EnrollmentController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
+            [$noPagination, $pagPerPage] = \getNoPaginationPagPerPageFromRequest($request);
             $perPage = $pagPerPage ?? 10;
 
             if ($noPagination) {
@@ -31,13 +31,13 @@ class EnrollmentController extends Controller
                 $enrollments = $this->enrollmentService->getEnrollmentsPaginated((int)$perPage);
             }
 
-            return apiResponse(
+            return \apiResponse(
                 true,
                 'Enrollments retrieved successfully.',
                 $enrollments
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to retrieve enrollments.',
                 null,
@@ -53,14 +53,14 @@ class EnrollmentController extends Controller
             $validated = $request->validated();
             $enrollment = $this->enrollmentService->createEnrollment($validated);
 
-            return apiResponse(
+            return \apiResponse(
                 true,
                 'Enrollment created successfully.',
                 $enrollment,
                 201
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to create enrollment.',
                 null,
@@ -76,7 +76,7 @@ class EnrollmentController extends Controller
             $enrollment = $this->enrollmentService->getEnrollmentById($id);
 
             if (!$enrollment) {
-                return apiResponse(
+                return \apiResponse(
                     false,
                     'Enrollment not found.',
                     null,
@@ -84,13 +84,13 @@ class EnrollmentController extends Controller
                 );
             }
 
-            return apiResponse(
+            return \apiResponse(
                 true,
                 'Enrollment retrieved successfully.',
                 $enrollment
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to retrieve enrollment.',
                 null,
@@ -106,13 +106,13 @@ class EnrollmentController extends Controller
             $validated = $request->validated();
             $enrollment = $this->enrollmentService->updateEnrollment($id, $validated);
 
-            return apiResponse(
+            return \apiResponse(
                 true,
                 'Enrollment updated successfully.',
                 $enrollment
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to update enrollment.',
                 null,
@@ -128,13 +128,13 @@ class EnrollmentController extends Controller
             $result = $this->enrollmentService->deleteEnrollment($id);
 
             if ($result) {
-                return apiResponse(
+                return \apiResponse(
                     true,
                     'Enrollment deleted successfully.'
                 );
             }
 
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to delete enrollment.',
                 null,
@@ -156,13 +156,13 @@ class EnrollmentController extends Controller
         try {
             $enrollments = $this->enrollmentService->getUserEnrollments($userId);
 
-            return apiResponse(
+            return \apiResponse(
                 true,
                 'User enrollments retrieved successfully.',
                 $enrollments
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to retrieve user enrollments.',
                 null,
@@ -177,13 +177,13 @@ class EnrollmentController extends Controller
         try {
             $enrollments = $this->enrollmentService->getCourseEnrollments($courseId);
 
-            return apiResponse(
+            return \apiResponse(
                 true,
                 'Course enrollments retrieved successfully.',
                 $enrollments
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to retrieve course enrollments.',
                 null,
@@ -202,13 +202,13 @@ class EnrollmentController extends Controller
 
             $enrollment = $this->enrollmentService->updateEnrollmentStatus($id, $validated['status']);
 
-            return apiResponse(
+            return \apiResponse(
                 true,
                 'Enrollment status updated successfully.',
                 $enrollment
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to update enrollment status.',
                 null,
