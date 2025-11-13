@@ -9,10 +9,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Modules\Course\App\Models\Course;
-use Modules\Results\Models\Result;
 use Modules\Subject\App\Models\Subject;
 use Spatie\Permission\Traits\HasRoles;
 use App\Console\Enums\Role;
+use Modules\Results\app\Models\Result;
 
 class User extends Authenticatable
 {
@@ -33,16 +33,33 @@ class User extends Authenticatable
     const date_of_birth = 'date_of_birth';
     const gender = 'gender';
     const profile_photo = 'profile_photo';
+    const uuid = 'uuid';
+    const first_name = 'first_name';
+    const last_name = 'last_name';
+    const role = 'role';
+    const city = 'city';
+    const country = 'country';
+    const status = 'status';
+    const last_login_at = 'last_login_at';
 
     protected $fillable = [
-        'name',
+        'uuid',
+        'first_name',
+        'last_name',
         'email',
-        'password',
         'phone_no',
-        'address',
-        'date_of_birth',
+        'password',
+        'role',
         'gender',
+        'date_of_birth',
         'profile_photo',
+        'address',
+        'city',
+        'country',
+        'status',
+        'email_verified_at',
+        'last_login_at',
+        'remember_token',
     ];
 
     protected $hidden = [
@@ -52,8 +69,9 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'date_of_birth' => 'datetime',
-        'password' => 'hashed'
+        'date_of_birth' => 'date',
+        'last_login_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
     // Relationships
@@ -64,9 +82,33 @@ class User extends Authenticatable
             ->withPivot(['enrollment_date', 'status']);
     }
 
+        // Student's classroom relationship
+        public function classroom(): BelongsToMany
+        {
+            // Assumes a pivot table 'classroom_student' with 'user_id' and 'classroom_id'
+            return $this->belongsToMany(\Modules\ClassRoom\app\Models\ClassRoom::class, 'classroom_student', 'user_id', 'classroom_id')
+                ->withTimestamps();
+        }
+
+        // Student's section relationship
+        public function section(): BelongsToMany
+        {
+            // Assumes a pivot table 'section_student' with 'user_id' and 'section_id'
+            return $this->belongsToMany(\Modules\ClassRoom\app\Models\Section::class, 'section_student', 'user_id', 'section_id')
+                ->withTimestamps();
+        }
+
+        // Student's subjects relationship
+        public function subjects(): BelongsToMany
+        {
+            // Assumes a pivot table 'subject_student' with 'user_id' and 'subject_id'
+            return $this->belongsToMany(\Modules\Subject\App\Models\Subject::class, 'subject_student', 'user_id', 'subject_id')
+                ->withTimestamps();
+        }
+
     public function results(): HasMany
     {
-        return $this->hasMany(Result::class, 'user_id');
+        return $this->hasMany(Result::class, 'student_id');
     }
 
     public function teachingSubjects(): BelongsToMany
@@ -81,6 +123,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Course::class, 'course_teacher', 'user_id', 'course_id')
             ->withTimestamps()
             ->withPivot(['assigned_date', 'status']);
+    }
+
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'course_student', 'user_id', 'course_id')
+            ->withTimestamps()
+            ->withPivot(['enrollment_date', 'status']);
     }
 
     // Role-based Helper Methods using the Enum

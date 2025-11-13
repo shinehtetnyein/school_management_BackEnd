@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Results\app\Http\Controllers\ResultApiController;
+use Modules\Results\app\Http\Controllers\ResultController;
 
-    Route::apiResource('results', ResultApiController::class);
+    Route::apiResource('results', ResultController::class);
 
 
 

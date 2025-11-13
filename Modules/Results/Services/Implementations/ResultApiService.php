@@ -3,35 +3,59 @@
 namespace Modules\Results\Services\Implementations;
 
 use Modules\Results\Services\ResultApiServiceInterface;
-use Modules\Results\Models\Result;
+use Modules\Results\app\Models\Result;
 
 class ResultApiService implements ResultApiServiceInterface
 {
-    public function list(array $filters = [])
+    public function getAllResults()
     {
-        return Result::query()->paginate(15);
+        return Result::all();
     }
 
-    public function create(array $data)
+    public function createResult(array $data)
     {
         return Result::create($data);
     }
 
-    public function update(int $id, array $data)
+    public function getResultById($id)
     {
-        $result = $this->find($id);
+        return Result::findOrFail($id);
+    }
+
+    public function updateResult($id, array $data)
+    {
+        $result = Result::findOrFail($id);
         $result->update($data);
         return $result;
     }
 
-    public function delete(int $id)
+    public function deleteResult($id)
     {
-        $result = $this->find($id);
-        return $result->delete();
+        $result = Result::findOrFail($id);
+        $result->delete();
     }
 
     public function find(int $id)
     {
-        return Result::findOrFail($id);
+        return $this->getResultById($id);
+    }
+
+    public function list(array $filters = [])
+    {
+        $query = Result::query();
+
+        foreach ($filters as $field => $value) {
+            if ($value === null) {
+                continue;
+            }
+
+            if (is_array($value)) {
+                $query->whereIn($field, $value);
+            } else {
+                $query->where($field, $value);
+            }
+        }
+
+        return $query->get();
     }
 }

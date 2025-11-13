@@ -4,11 +4,10 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Subject\App\Http\Controllers\SubjectApiController;
 
-Route::prefix('subjects')->group(function () {
-    // Subject CRUD Routes
-    Route::apiResource('/', SubjectApiController::class)->parameters(['' => 'subject']);
+Route::apiResource('subjects', SubjectApiController::class);
 
-    // Additional Subject Routes
+// Additional Subject Routes
+Route::prefix('subjects')->group(function () {
     Route::get('course/{courseId}', [SubjectApiController::class, 'getByCourse']);
     Route::get('level/{classLevel}', [SubjectApiController::class, 'getByLevel']);
     Route::get('search', [SubjectApiController::class, 'search']);

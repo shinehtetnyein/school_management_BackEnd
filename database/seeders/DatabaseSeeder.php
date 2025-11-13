@@ -12,6 +12,9 @@ use Modules\Course\Database\Seeders\CourseSeeder;
 use Modules\Course\Database\Seeders\EnrollmentSeeder;
 use Modules\Subject\Database\Seeders\CourseSubjectSeeder;
 use Modules\Subject\Database\Seeders\SubjectSeeder;
+use Modules\ClassRoom\Database\Seeders\ClassroomSeeder;
+use Modules\ClassRoom\Database\Seeders\SectionSeeder;
+use Modules\Users\Database\Seeders\DefaultStudentSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,7 +28,8 @@ class DatabaseSeeder extends Seeder
 
         // Create a test user
         User::factory()->create([
-            'name' => 'Test User',
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'test@example.com',
         ]);
 
@@ -33,10 +37,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DevUsersSeeder::class,
             AcademicYearSeeder::class,
+            ClassroomSeeder::class,
+            SectionSeeder::class,
             CourseSeeder::class,
             EnrollmentSeeder::class,
             SubjectSeeder::class,
             CourseSubjectSeeder::class,
+            DefaultStudentSeeder::class,
         ]);
     }
 }

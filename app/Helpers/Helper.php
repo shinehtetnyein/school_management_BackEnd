@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 
-if (! function_exists('apiResponse')) {
+if (!function_exists('apiResponse')) {
     function apiResponse(bool $success, string $message = '', $data = null, int $statusCode = 200, array $errors = [])
     {
         return response()->json([

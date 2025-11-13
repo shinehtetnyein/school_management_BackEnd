@@ -57,8 +57,11 @@ class DevUsersSeeder extends Seeder
             $user = User::firstOrCreate(
                 ['email' => $email],
                 [
-                    'name' => $roleEnum->label() . ' User',
+                    'first_name' => $roleEnum->label(),
+                    'last_name' => 'User',
                     'password' => Hash::make('password'),
+                    'role' => $roleEnum->value,
+                    'status' => 'active',
                 ]
             );
 

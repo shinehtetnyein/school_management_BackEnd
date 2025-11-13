@@ -2,55 +2,59 @@
 
 namespace Modules\Users\Students\app\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Modules\Users\Students\Services\StudentApiServiceInterface;
+use Modules\Users\Students\app\Http\Request\StudentRequest;
+use Modules\Users\Students\app\Http\Resource\StudentResource;
 
 class StudentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $service;
+
+    public function __construct(StudentApiServiceInterface $service)
+    {
+        $this->service = $service;
+    }
+
+    // List all students
     public function index()
     {
-        return view('student::index');
+        $students = $this->service->getAllStudents();
+        $totalStudents = \Modules\Users\User\App\Models\User::whereHas('roles', function($q) {
+            $q->where('name', 'student');
+        })->count();
+
+        return response()->json([
+            'data' => StudentResource::collection($students),
+            'total_students' => $totalStudents
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Store a new student
+    public function store(StudentRequest $request)
     {
-        return view('student::create');
+        $student = $this->service->createStudent($request->validated());
+        return new StudentResource($student);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
+    // Show a student
     public function show($id)
     {
-        return view('student::show');
+        $student = $this->service->getStudentById($id);
+        return new StudentResource($student);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    // Update a student
+    public function update(StudentRequest $request, $id)
     {
-        return view('student::edit');
+        $student = $this->service->updateStudent($id, $request->validated());
+        return new StudentResource($student);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+    // Delete a student
+    public function destroy($id)
+    {
+        $this->service->deleteStudent($id);
+        return response()->json(null, 204);
+    }
 }

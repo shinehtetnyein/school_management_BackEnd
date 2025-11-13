@@ -22,14 +22,8 @@ class EnrollmentController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            [$noPagination, $pagPerPage] = \getNoPaginationPagPerPageFromRequest($request);
-            $perPage = $pagPerPage ?? 10;
-
-            if ($noPagination) {
-                $enrollments = $this->enrollmentService->getAllEnrollments();
-            } else {
-                $enrollments = $this->enrollmentService->getEnrollmentsPaginated((int)$perPage);
-            }
+            $perPage = $request->query('per_page', 10);
+            $enrollments = $this->enrollmentService->index((int)$perPage);
 
             return \apiResponse(
                 true,
@@ -51,7 +45,7 @@ class EnrollmentController extends Controller
     {
         try {
             $validated = $request->validated();
-            $enrollment = $this->enrollmentService->createEnrollment($validated);
+            $enrollment = $this->enrollmentService->store($validated);
 
             return \apiResponse(
                 true,
@@ -73,7 +67,7 @@ class EnrollmentController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $enrollment = $this->enrollmentService->getEnrollmentById($id);
+            $enrollment = $this->enrollmentService->show($id);
 
             if (!$enrollment) {
                 return \apiResponse(
@@ -104,7 +98,7 @@ class EnrollmentController extends Controller
     {
         try {
             $validated = $request->validated();
-            $enrollment = $this->enrollmentService->updateEnrollment($id, $validated);
+            $enrollment = $this->enrollmentService->update($id, $validated);
 
             return \apiResponse(
                 true,
@@ -125,7 +119,7 @@ class EnrollmentController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
-            $result = $this->enrollmentService->deleteEnrollment($id);
+            $result = $this->enrollmentService->destroy($id);
 
             if ($result) {
                 return \apiResponse(
@@ -141,76 +135,9 @@ class EnrollmentController extends Controller
                 500
             );
         } catch (\Exception $e) {
-            return apiResponse(
+            return \apiResponse(
                 false,
                 'Failed to delete enrollment.',
-                null,
-                500,
-                [$e->getMessage()]
-            );
-        }
-    }
-
-    public function getUserEnrollments(int $userId): JsonResponse
-    {
-        try {
-            $enrollments = $this->enrollmentService->getUserEnrollments($userId);
-
-            return \apiResponse(
-                true,
-                'User enrollments retrieved successfully.',
-                $enrollments
-            );
-        } catch (\Exception $e) {
-            return \apiResponse(
-                false,
-                'Failed to retrieve user enrollments.',
-                null,
-                500,
-                [$e->getMessage()]
-            );
-        }
-    }
-
-    public function getCourseEnrollments(int $courseId): JsonResponse
-    {
-        try {
-            $enrollments = $this->enrollmentService->getCourseEnrollments($courseId);
-
-            return \apiResponse(
-                true,
-                'Course enrollments retrieved successfully.',
-                $enrollments
-            );
-        } catch (\Exception $e) {
-            return \apiResponse(
-                false,
-                'Failed to retrieve course enrollments.',
-                null,
-                500,
-                [$e->getMessage()]
-            );
-        }
-    }
-
-    public function updateStatus(Request $request, int $id): JsonResponse
-    {
-        try {
-            $validated = $request->validate([
-                'status' => 'required|in:active,completed,dropped'
-            ]);
-
-            $enrollment = $this->enrollmentService->updateEnrollmentStatus($id, $validated['status']);
-
-            return \apiResponse(
-                true,
-                'Enrollment status updated successfully.',
-                $enrollment
-            );
-        } catch (\Exception $e) {
-            return \apiResponse(
-                false,
-                'Failed to update enrollment status.',
                 null,
                 500,
                 [$e->getMessage()]

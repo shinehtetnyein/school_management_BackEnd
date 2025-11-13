@@ -19,4 +19,5 @@ return [
     Modules\Exams\app\Providers\ExamsServiceProvider::class,
     Modules\Library\app\Providers\LibraryServiceProvider::class,
     Modules\Homework\app\Providers\HomeworkServiceProvider::class,
+    Modules\Users\Students\app\Providers\StudentServiceProvider::class,
 ];

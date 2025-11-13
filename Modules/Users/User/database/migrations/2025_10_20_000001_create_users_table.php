@@ -9,17 +9,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('phone_no')->nullable();
-            $table->text('address')->nullable();
-            $table->date('date_of_birth')->nullable();
+            $table->bigIncrements('id');
+            $table->uuid('uuid')->nullable()->unique();
+            $table->string('first_name', 100);
+            $table->string('last_name', 100);
+            $table->string('email', 255)->unique();
+            $table->string('phone_no', 20)->nullable();
+            $table->string('password', 255);
+            $table->enum('role', ['root_admin', 'teacher', 'parent', 'librarian', 'accountant', 'admin', 'student', 'guest']);
             $table->enum('gender', ['male', 'female', 'other'])->nullable();
-            $table->string('profile_photo')->nullable();
-            $table->rememberToken();
+            $table->date('date_of_birth')->nullable();
+            $table->string('profile_photo', 255)->nullable();
+            $table->text('address')->nullable();
+            $table->string('city', 100)->nullable();
+            $table->string('country', 100)->nullable();
+            $table->enum('status', ['active','inactive','suspended']);
+            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->string('remember_token', 100)->nullable();
             $table->timestamps();
         });
 
