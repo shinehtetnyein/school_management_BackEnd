@@ -39,5 +39,12 @@ class AppServiceProvider extends ServiceProvider
         Route::prefix('api')
         ->middleware('api')
         ->group(base_path('routes/api.php'));
+
+        // Register Spatie permission middleware aliases so module routes
+        // using `role:` or `permission:` resolve correctly.
+        $router = $this->app->make('\Illuminate\Routing\Router');
+        $router->aliasMiddleware('role', \Spatie\Permission\Middleware\RoleMiddleware::class);
+        $router->aliasMiddleware('permission', \Spatie\Permission\Middleware\PermissionMiddleware::class);
+        $router->aliasMiddleware('role_or_permission', \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class);
     }
 }

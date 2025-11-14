@@ -2,59 +2,173 @@
 
 namespace Modules\Users\Students\app\Http\Controllers;
 
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Modules\Users\Students\Services\StudentApiServiceInterface;
-use Modules\Users\Students\app\Http\Request\StudentRequest;
-use Modules\Users\Students\app\Http\Resource\StudentResource;
+use Modules\Users\Students\app\Http\Requests\StoreStudentRequest;
+use Modules\Users\Students\app\Http\Requests\UpdateStudentRequest;
 
 class StudentController extends Controller
 {
-    protected $service;
+    protected $studentService;
 
-    public function __construct(StudentApiServiceInterface $service)
+    public function __construct(StudentApiServiceInterface $studentService)
     {
-        $this->service = $service;
+        $this->studentService = $studentService;
     }
 
-    // List all students
-    public function index()
+    /**
+     * Get all students
+     */
+    public function index(): JsonResponse
     {
-        $students = $this->service->getAllStudents();
-        $totalStudents = \Modules\Users\User\App\Models\User::whereHas('roles', function($q) {
-            $q->where('name', 'student');
-        })->count();
+        try {
+            $students = $this->studentService->getAllStudents();
+            $totalCount = count($students);
 
-        return response()->json([
-            'data' => StudentResource::collection($students),
-            'total_students' => $totalStudents
-        ]);
+            return apiResponse(
+                true,
+                'Students retrieved successfully.',
+                [
+                    'total_count' => $totalCount,
+                    'students' => $students
+                ]
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to retrieve students.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
     }
 
-    // Store a new student
-    public function store(StudentRequest $request)
+    /**
+     * Create a new student
+     */
+    public function store(StoreStudentRequest $request): JsonResponse
     {
-        $student = $this->service->createStudent($request->validated());
-        return new StudentResource($student);
+        try {
+            $validated = $request->validated();
+            $student = $this->studentService->createStudent($validated);
+
+            return apiResponse(
+                true,
+                'Student created successfully.',
+                $this->transformStudent($student),
+                201
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to create student.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
     }
 
-    // Show a student
-    public function show($id)
+    /**
+     * Get a specific student by ID
+     */
+    public function show(int $id): JsonResponse
     {
-        $student = $this->service->getStudentById($id);
-        return new StudentResource($student);
+        try {
+            $student = $this->studentService->getStudentById($id);
+
+            if (!$student) {
+                return apiResponse(
+                    false,
+                    'Student not found.',
+                    null,
+                    404
+                );
+            }
+
+            return apiResponse(
+                true,
+                'Student retrieved successfully.',
+                $this->transformStudent($student)
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to retrieve student.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
     }
 
-    // Update a student
-    public function update(StudentRequest $request, $id)
+    /**
+     * Update a student
+     */
+    public function update(UpdateStudentRequest $request, int $id): JsonResponse
     {
-        $student = $this->service->updateStudent($id, $request->validated());
-        return new StudentResource($student);
+        try {
+            $validated = $request->validated();
+            $student = $this->studentService->updateStudent($id, $validated);
+
+            return apiResponse(
+                true,
+                'Student updated successfully.',
+                $this->transformStudent($student)
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to update student.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
     }
 
-    // Delete a student
-    public function destroy($id)
+    /**
+     * Delete a student
+     */
+    public function destroy(int $id): JsonResponse
     {
-        $this->service->deleteStudent($id);
-        return response()->json(null, 204);
+        try {
+            $this->studentService->deleteStudent($id);
+
+            return apiResponse(
+                true,
+                'Student deleted successfully.'
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to delete student.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    /**
+     * Transform student for API response
+     */
+    private function transformStudent($student): array
+    {
+        return [
+            'id' => $student->id,
+            'uuid' => $student->uuid ?? null,
+            'name' => $student->name,
+            'email' => $student->email,
+            'phone_no' => $student->phone_no,
+            'first_name' => $student->first_name,
+            'last_name' => $student->last_name,
+            'status' => $student->status ?? 'active',
+            'created_at' => $student->created_at,
+            'updated_at' => $student->updated_at,
+        ];
     }
 }

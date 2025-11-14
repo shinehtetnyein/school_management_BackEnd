@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Users\Parent\App\Providers;
+namespace Modules\Users\Parents\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Users\Parent\Services\Implementations\ParentApiService;
-use Modules\Users\Parent\Services\ParentApiServiceInterface;
+use Modules\Users\Parents\Services\Implementations\ParentApiService;
+use Modules\Users\Parents\Services\ParentApiServiceInterface;
 
 class ParentServiceProvider extends ServiceProvider
 {
@@ -23,8 +23,9 @@ class ParentServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'parent');
         Route::prefix('api/v1')
-            ->middleware('api') // Apply any middleware if needed
+            ->middleware('api')
             ->group(function () {
                 require __DIR__ . '/../../routes/api_v1.0.php';
             });

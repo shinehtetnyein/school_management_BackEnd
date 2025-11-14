@@ -17,21 +17,3 @@ if (!function_exists('apiResponse')) {
         ], $statusCode);
     }
 }
-
-if (! function_exists('getLimitOffsetFromRequest')) {
-    function getLimitOffsetFromRequest(Request $request)
-    {
-        $offset = $request->offset;
-        $limit  = $request->limit ?? 10;
-        return [$limit, $offset];
-    }
-}
-
-if (! function_exists('getNoPaginationPagPerPageFromRequest')) {
-    function getNoPaginationPagPerPageFromRequest(Request $request)
-    {
-        $noPagination = boolval($request->noPagination);
-        $pagPerPage   = $request->pagPerPage;
-        return [$noPagination, $pagPerPage];
-    }
-}

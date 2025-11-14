@@ -10,7 +10,7 @@ class StudentApiService implements StudentApiServiceInterface
     public function getAllStudents()
     {
         // Use scopeStudents or hasRole relationship
-        return User::students()->get();
+        return User::students()->orderBy('id', 'asc')->get();
     }
 
     public function createStudent(array $data)

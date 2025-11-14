@@ -15,6 +15,8 @@ use Modules\Subject\Database\Seeders\SubjectSeeder;
 use Modules\ClassRoom\Database\Seeders\ClassroomSeeder;
 use Modules\ClassRoom\Database\Seeders\SectionSeeder;
 use Modules\Users\Database\Seeders\DefaultStudentSeeder;
+use Modules\Users\Database\Seeders\TeacherSeeder;
+use Modules\Users\Parents\Database\Seeders\ParentsSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -44,6 +46,8 @@ class DatabaseSeeder extends Seeder
             SubjectSeeder::class,
             CourseSubjectSeeder::class,
             DefaultStudentSeeder::class,
+            TeacherSeeder::class,
+            ParentsSeeder::class,
         ]);
     }
 }

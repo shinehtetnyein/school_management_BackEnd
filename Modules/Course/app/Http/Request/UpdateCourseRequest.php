@@ -1,7 +1,7 @@
 <?php
-// Modules/Course/app/Http/Requests/UpdateCourseRequest.php
+// Modules/Course/app/Http/Request/UpdateCourseRequest.php
 
-namespace Modules\Course\App\Http\Requests;
+namespace Modules\Course\App\Http\Request;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Modules\Course\Models\Course;

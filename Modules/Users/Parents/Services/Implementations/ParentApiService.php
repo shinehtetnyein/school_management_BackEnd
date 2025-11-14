@@ -1,7 +1,7 @@
 <?php
 
-namespace Modules\Users\Parent\Services\Implementations;
-use Modules\Users\Parent\Services\ParentApiServiceInterface;
+namespace Modules\Users\Parents\Services\Implementations;
+use Modules\Users\Parents\Services\ParentApiServiceInterface;
 
 class ParentApiService implements ParentApiServiceInterface
 {

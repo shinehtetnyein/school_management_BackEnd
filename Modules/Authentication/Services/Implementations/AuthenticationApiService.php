@@ -15,7 +15,7 @@ class AuthenticationApiService implements AuthenticationApiServiceInterface
      */
     public function register(array $data)
     {
-        $role = $data['role'] ?? 'student'; // default role if not provided
+        $roleSlug = $data['role'] ?? Role::STUDENT->value; // default role slug
         $password = $data['password'];
 
         $data['password'] = Hash::make($password);
@@ -23,12 +23,19 @@ class AuthenticationApiService implements AuthenticationApiServiceInterface
 
         $user = User::create($data);
 
+        // Validate slug and get DB label via enum
+        $roleEnum = Role::tryFrom($roleSlug);
+        $dbRole = $roleEnum ? $roleEnum->label() : $roleSlug;
+
         // Assign role using Spatie
-        $user->assignRole($role);
+        $user->assignRole($dbRole);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Determine token abilities from config
+        $abilities = config('role_abilities.' . $roleSlug, ['*']);
 
-        return ['user' => $user, 'token' => $token];
+        $token = $user->createToken('auth_token', $abilities)->plainTextToken;
+
+        return ['user' => $user, 'token' => $token, 'role' => $roleSlug, 'abilities' => $abilities];
     }
 
     /**
@@ -53,38 +60,33 @@ public function login(array $credentials)
         ]);
     }
 
-    // Map simple enum/slug to DB role name
-    $roleMap = [
-        'root_admin' => 'Root Admin',
-        'admin'      => 'Admin',
-        'teacher'    => 'Teacher',
-        'student'    => 'Student',
-        'parent'     => 'Parent',
-        'librarian'  => 'Librarian',
-        'guest'      => 'Guest',
-        'accountant' => 'Accountant',
-    ];
-
-    if (!array_key_exists($requestedRole, $roleMap)) {
+    // Validate requested role using enum
+    $roleEnum = Role::tryFrom($requestedRole);
+    if (! $roleEnum) {
         throw ValidationException::withMessages([
             'role' => ['The selected role is invalid.']
         ]);
     }
 
-    $dbRoleName = $roleMap[$requestedRole];
+    $dbRoleName = $roleEnum->label();
 
-    if (!$user->hasRole($dbRoleName)) {
+    if (! $user->hasRole($dbRoleName)) {
         throw ValidationException::withMessages([
             'role' => ['You are not authorized for this role.']
         ]);
     }
 
-    $token = $user->createToken('auth_token')->plainTextToken;
+    // Token abilities
+    $abilities = config('role_abilities.' . $requestedRole, ['*']);
+
+    $token = $user->createToken('auth_token', $abilities)->plainTextToken;
 
     return [
         'user' => $user,
         'roles' => $user->getRoleNames(),
         'token' => $token,
+        'role' => $requestedRole,
+        'abilities' => $abilities,
     ];
 }
 

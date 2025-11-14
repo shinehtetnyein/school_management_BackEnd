@@ -5,6 +5,7 @@ namespace Modules\Subject\App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Modules\Course\App\Models\Course;
 use Modules\AcademicYears\App\Models\AcademicYear;
 use Modules\Exams\App\Models\Exam;
@@ -14,6 +15,7 @@ class Subject extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'subject_code',
         'subject_name',
         'subject_desc',
@@ -26,6 +28,20 @@ class Subject extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
+
+    /**
+     * Boot the model and add event listeners
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
+    }
 
     /**
      * Get the status enum values

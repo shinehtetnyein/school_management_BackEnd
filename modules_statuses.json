@@ -5,6 +5,7 @@
     "Accountant": true,
     "Parent": true,
     "Student": true,
+    "Teacher": true,
     "Book": true,
     "AcademicYears": true
 }

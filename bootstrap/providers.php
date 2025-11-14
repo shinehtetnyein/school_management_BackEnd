@@ -7,7 +7,6 @@ return [
     Nwidart\Modules\LaravelModulesServiceProvider::class,
     Modules\Authentication\App\Providers\AuthenticationServiceProvider::class,
     Modules\Users\User\App\Providers\UserServiceProvider::class,
-    Modules\Users\Teacher\App\Providers\TeacherServiceProvider::class,
     Modules\Attendance\App\Providers\AttendanceServiceProvider::class,
     Modules\AcademicYears\App\Providers\AcademicYearApiProvider::class,
     Modules\Course\App\Providers\CourseServiceProvider::class,
@@ -20,4 +19,7 @@ return [
     Modules\Library\app\Providers\LibraryServiceProvider::class,
     Modules\Homework\app\Providers\HomeworkServiceProvider::class,
     Modules\Users\Students\app\Providers\StudentServiceProvider::class,
+    Modules\Users\Admin\app\Providers\AdminServiceProvider::class,
+    Modules\Users\Teachers\app\Providers\TeacherServiceProvider::class,
+    Modules\Users\Parents\app\Providers\ParentServiceProvider::class,
 ];

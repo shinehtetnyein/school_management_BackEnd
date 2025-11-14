@@ -7,8 +7,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Modules\Course\Services\EnrollmentApiServiceInterface;
-use Modules\Course\App\Http\Requests\StoreEnrollmentRequest;
-use Modules\Course\App\Http\Requests\UpdateEnrollmentRequest;
+use Modules\Course\App\Http\Request\StoreEnrollmentRequest;
+use Modules\Course\App\Http\Request\UpdateEnrollmentRequest;
 
 class EnrollmentController extends Controller
 {
@@ -22,8 +22,7 @@ class EnrollmentController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $perPage = $request->query('per_page', 10);
-            $enrollments = $this->enrollmentService->index((int)$perPage);
+            $enrollments = $this->enrollmentService->index();
 
             return \apiResponse(
                 true,

@@ -3,18 +3,40 @@
 
 namespace Modules\Course\Services\Implementations;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Course\App\Models\Enrollment;
 use Modules\Course\Services\EnrollmentApiServiceInterface;
 use Illuminate\Support\Facades\DB;
 
 class EnrollmentApiService implements EnrollmentApiServiceInterface
 {
-    public function index(int $perPage = 10): LengthAwarePaginator
+    public function index(int $perPage = 10): array
     {
-        return Enrollment::with(['user', 'course'])
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        $enrollments = Enrollment::with(['user', 'course'])
+            ->orderBy('id', 'asc')
+            ->get()
+            ->map(function ($enrollment) {
+                return [
+                    'id' => $enrollment->id,
+                    'user' => [
+                        'id' => $enrollment->user->id ?? null,
+                        'uuid' => $enrollment->user->uuid ?? null,
+                        'name' => $enrollment->user->name ?? null,
+                        'email' => $enrollment->user->email ?? null,
+                    ],
+                    'course' => [
+                        'id' => $enrollment->course->id ?? null,
+                        'uuid' => $enrollment->course->uuid ?? null,
+                        'course_name' => $enrollment->course->course_name ?? null,
+                    ],
+                    'enrolled_at' => $enrollment->enrolled_at ?? $enrollment->created_at,
+                    'status' => $enrollment->status,
+                ];
+            })->toArray();
+
+        return [
+            'total_count' => count($enrollments),
+            'enrollments' => $enrollments
+        ];
     }
 
     public function show(int $id): ?Enrollment

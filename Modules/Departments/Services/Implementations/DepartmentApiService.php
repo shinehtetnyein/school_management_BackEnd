@@ -16,7 +16,7 @@ class DepartmentApiService implements DepartmentApiServiceInterface
         if ($type) {
             $query->where('type', $type);
         }
-        return $query->get()->toArray();
+        return $query->orderBy('id', 'asc')->get()->toArray();
     }
 
     public function getDepartmentById(int $id): array

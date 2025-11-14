@@ -19,7 +19,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, HasApiTokens, Notifiable, HasRoles;
 
-    protected $guard_name = 'sanctum';
+    protected $guard_name = 'api';
 
     protected $appends = ['role'];
 
@@ -44,6 +44,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'uuid',
+        'name',
         'first_name',
         'last_name',
         'email',
@@ -229,6 +230,38 @@ class User extends Authenticatable
     public function getFullName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Accessor for `name` that combines `first_name` and `last_name`.
+     */
+    public function getNameAttribute()
+    {
+        $first = $this->attributes['first_name'] ?? null;
+        $last = $this->attributes['last_name'] ?? null;
+
+        if ($first && $last) {
+            return trim($first . ' ' . $last);
+        }
+
+        return $first ?? ($this->attributes['name'] ?? null);
+    }
+
+    /**
+     * Mutator for `name` to split into `first_name` and `last_name`.
+     */
+    public function setNameAttribute($value)
+    {
+        $value = trim((string) ($value ?? ''));
+        if ($value === '') {
+            $this->attributes['first_name'] = null;
+            $this->attributes['last_name'] = null;
+            return;
+        }
+
+        $parts = preg_split('/\s+/', $value);
+        $this->attributes['first_name'] = $parts[0] ?? null;
+        $this->attributes['last_name'] = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : null;
     }
 
     public function getIdentificationNumber(): string

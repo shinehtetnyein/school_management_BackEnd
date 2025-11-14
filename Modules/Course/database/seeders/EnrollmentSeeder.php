@@ -17,7 +17,7 @@ class EnrollmentSeeder extends Seeder
             return;
         }
 
-        $this->command->info('Creating realistic student enrollments for Myanmar high school...');
+        $this->command->info('Creating student enrollments - Each student assigned to ONE course (their grade level)...');
 
         // Get all courses grouped by category
         $primaryCourses = Course::where('category', 'Primary Education')->get();
@@ -36,23 +36,20 @@ class EnrollmentSeeder extends Seeder
         }
 
         $enrollmentCount = 0;
+        $allCourses = Course::all()->toArray();
+        $courseCount = count($allCourses);
+
+        if ($courseCount === 0) {
+            $this->command->error('No courses found. Please run CourseSeeder first.');
+            return;
+        }
 
         foreach ($students as $index => $student) {
-            // Distribute students across different grade levels realistically
-            if ($index < 10) {
-                // First 10 students in Primary (Grade 1-5)
-                $gradeCourse = $primaryCourses->where('course_name', 'like', '%Grade ' . ($index % 5 + 1) . '%')->first();
-            } elseif ($index < 20) {
-                // Next 10 students in Middle School (Grade 6-9)
-                $gradeCourse = $middleCourses->where('course_name', 'like', '%Grade ' . (($index % 4) + 6) . '%')->first();
-            } elseif ($index < 25) {
-                // Next 5 students in Arts Stream (Grade 10-12)
-                $gradeCourse = $artsCourses->where('course_name', 'like', '%Grade ' . (($index % 3) + 10) . '%')->first();
-            } else {
-                // Remaining students in Science Stream (Grade 10-12)
-                $gradeCourse = $scienceCourses->where('course_name', 'like', '%Grade ' . (($index % 3) + 10) . '%')->first();
-            }
+            // Each student gets ONE course based on their index/grade distribution
+            $courseIndex = $index % $courseCount;
+            $gradeCourse = Course::find($allCourses[$courseIndex]['id']);
 
+            // Skip if already enrolled in this course
             if ($gradeCourse && !Enrollment::where('user_id', $student->id)
                 ->where('course_id', $gradeCourse->id)
                 ->exists()) {
@@ -70,7 +67,8 @@ class EnrollmentSeeder extends Seeder
             }
         }
 
-        $this->command->info("Created {$enrollmentCount} realistic student enrollments.");
+        $this->command->info("Created {$enrollmentCount} student enrollments.");
+        $this->command->info("✓ Each student is enrolled in exactly ONE course (their grade level).");
     }
 
     private function getClassLevelFromCourse(string $courseName): string

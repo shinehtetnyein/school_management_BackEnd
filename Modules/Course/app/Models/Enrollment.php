@@ -1,11 +1,11 @@
 <?php
 // Modules/Course/app/Models/Enrollment.php
 
-namespace Modules\Course\App\Models;
+namespace Modules\Course\app\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Users\User\App\Models\User;
+use Modules\Users\User\app\Models\User;
 
 class Enrollment extends Model
 {

@@ -25,21 +25,21 @@ class UserApiService implements UserApiServiceInterface
         ?bool $noPagination = false,
         ?int $pagPerPage = null
     ) {
-        $query = User::orderBy('id', 'desc');
+        $query = User::orderBy('id', 'asc');
 
-        if ($noPagination) {
-            return $query->get();
-        }
+        $users = $query->get()->map(function($user) {
+            return [
+                'id' => $user->id,
+                'uuid' => $user->uuid,
+                'name' => $user->name,
+                'email' => $user->email,
+            ];
+        })->toArray();
 
-        if ($pagPerPage) {
-            return $query->paginate($pagPerPage);
-        }
-
-        if ($limit !== null && $offset !== null) {
-            return $query->skip($offset)->take($limit)->get();
-        }
-
-        return $query->get();
+        return [
+            'total_count' => count($users),
+            'users' => $users
+        ];
     }
 
     /**

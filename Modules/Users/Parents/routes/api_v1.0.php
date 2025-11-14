@@ -1,8 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Users\Parent\Http\Controllers\ParentController;
+use Modules\Users\Parents\App\Http\Controllers\ParentController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('parents', ParentController::class)->names('parent');
-});
+Route::apiResource('parents', ParentController::class)->names('parent');
+

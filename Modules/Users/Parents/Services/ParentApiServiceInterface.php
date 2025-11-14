@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Users\Parent\Services;
+namespace Modules\Users\Parents\Services;
 
 interface ParentApiServiceInterface
 {

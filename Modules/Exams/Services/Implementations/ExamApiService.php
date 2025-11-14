@@ -2,14 +2,26 @@
 
 namespace Modules\Exams\Services\Implementations;
 
+use Modules\Exams\App\Models\Exam;
 use Modules\Exams\Services\ExamApiServiceInterface;
-use Modules\Exams\Models\Exam;
 
 class ExamApiService implements ExamApiServiceInterface
 {
     public function list(array $filters = [])
     {
-        return Exam::query()->paginate(15);
+        $exams = Exam::query()->orderBy('id', 'asc')->get()->map(function($exam) {
+            return [
+                'id' => $exam->id,
+                'title' => $exam->title,
+                'created_at' => $exam->created_at,
+                'updated_at' => $exam->updated_at,
+            ];
+        })->toArray();
+
+        return [
+            'total_count' => count($exams),
+            'exams' => $exams
+        ];
     }
 
     public function create(array $data)

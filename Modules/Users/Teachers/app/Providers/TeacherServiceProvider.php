@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Users\Teacher\App\Providers;
+namespace Modules\Users\Teachers\App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Users\Teacher\Services\Implementations\TeacherApiService;
-use Modules\Users\Teacher\Services\TeacherApiServiceInterface;
+use Modules\Users\Teachers\Services\Implementations\TeacherApiService;
+use Modules\Users\Teachers\Services\TeacherApiServiceInterface;
 
 class TeacherServiceProvider extends ServiceProvider
 {
@@ -23,8 +23,8 @@ class TeacherServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-        Route::prefix('api/v1')
-            ->middleware('api') // Apply any middleware if needed
+        Route::prefix('api')
+            ->middleware('api')
             ->group(function () {
                 require __DIR__ . '/../../routes/api_v1.0.php';
             });

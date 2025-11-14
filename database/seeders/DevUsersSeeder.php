@@ -25,22 +25,6 @@ class DevUsersSeeder extends Seeder
             return;
         }
 
-        $this->command->info('Creating roles with guard "sanctum"...');
-
-        // Ensure all roles exist with the correct guard
-        foreach (RoleEnum::cases() as $roleEnum) {
-            $role = SpatieRole::firstOrCreate(
-                ['name' => $roleEnum->label()],
-                ['guard_name' => 'sanctum']
-            );
-
-            // Fix any roles that may already exist with wrong guard
-            if ($role->guard_name !== 'sanctum') {
-                $role->guard_name = 'sanctum';
-                $role->save();
-            }
-        }
-
         $this->command->info('Creating users and assigning roles...');
 
         // Users to create
@@ -66,7 +50,7 @@ class DevUsersSeeder extends Seeder
             );
 
             // Assign role only if not already assigned
-            if (!$user->hasRole($roleEnum->label(), 'sanctum')) {
+            if (!$user->hasRole($roleEnum->label())) {
                 $user->assignRole($roleEnum->label());
             }
         }

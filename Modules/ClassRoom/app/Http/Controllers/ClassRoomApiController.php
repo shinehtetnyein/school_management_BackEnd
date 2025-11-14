@@ -13,7 +13,19 @@ class ClassRoomApiController extends Controller
      */
     public function index()
     {
-        return Classroom::paginate();
+        $classrooms = Classroom::get()->map(function($classroom) {
+            return [
+                'id' => $classroom->id,
+                'name' => $classroom->name ?? null,
+                'created_at' => $classroom->created_at,
+                'updated_at' => $classroom->updated_at,
+            ];
+        })->toArray();
+
+        return [
+            'total_count' => count($classrooms),
+            'classrooms' => $classrooms
+        ];
     }
 
     /**

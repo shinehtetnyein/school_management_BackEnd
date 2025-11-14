@@ -4,7 +4,8 @@ namespace Modules\Exams\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Exams\Models\Exam;
+use Modules\Exams\App\Models\Exam;
+
 
 class ExamController extends Controller
 {
@@ -13,7 +14,19 @@ class ExamController extends Controller
      */
     public function index()
     {
-        return Exam::paginate();
+        $exams = Exam::get()->map(function($exam) {
+            return [
+                'id' => $exam->id,
+                'title' => $exam->title ?? null,
+                'created_at' => $exam->created_at,
+                'updated_at' => $exam->updated_at,
+            ];
+        })->toArray();
+
+        return [
+            'total_count' => count($exams),
+            'exams' => $exams
+        ];
     }
 
     /**

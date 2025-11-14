@@ -7,8 +7,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Modules\Course\Services\CourseApiServiceInterface;
-use Modules\Course\App\Http\Requests\StoreCourseRequest;
-use Modules\Course\App\Http\Requests\UpdateCourseRequest;
+use Modules\Course\App\Http\Request\StoreCourseRequest;
+use Modules\Course\App\Http\Request\UpdateCourseRequest;
 
 class CourseController extends Controller
 {
@@ -19,22 +19,19 @@ class CourseController extends Controller
         $this->courseService = $courseService;
     }
 
+    /**
+     * Get all courses with optional pagination
+     */
     public function index(Request $request): JsonResponse
     {
         try {
-            [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
-            $perPage = $pagPerPage ?? 10;
-
-            if ($noPagination) {
-                $courses = $this->courseService->getAllCourses();
-            } else {
-                $courses = $this->courseService->getCoursesPaginated((int)$perPage);
-            }
+            // Always return the full list of courses (no pagination)
+            $courseData = $this->courseService->getAllCourses();
 
             return apiResponse(
                 true,
                 'Courses retrieved successfully.',
-                $courses
+                $courseData
             );
         } catch (\Exception $e) {
             return apiResponse(
@@ -47,6 +44,9 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Create a new course
+     */
     public function store(StoreCourseRequest $request): JsonResponse
     {
         try {
@@ -56,7 +56,14 @@ class CourseController extends Controller
             return apiResponse(
                 true,
                 'Course created successfully.',
-                $course,
+                [
+                    'uuid' => $course->uuid,
+                    'id' => $course->id,
+                    'course_name' => $course->course_name,
+                    'description' => $course->description,
+                    'category' => $course->category,
+                    'created_at' => $course->created_at
+                ],
                 201
             );
         } catch (\Exception $e) {
@@ -70,10 +77,13 @@ class CourseController extends Controller
         }
     }
 
-    public function show(int $id): JsonResponse
+    /**
+     * Get a specific course by UUID
+     */
+    public function show(string $uuid): JsonResponse
     {
         try {
-            $course = $this->courseService->getCourseById($id);
+            $course = $this->courseService->getCourseByUuid($uuid);
 
             if (!$course) {
                 return apiResponse(
@@ -100,11 +110,14 @@ class CourseController extends Controller
         }
     }
 
-    public function update(UpdateCourseRequest $request, int $id): JsonResponse
+    /**
+     * Update a course by UUID
+     */
+    public function update(UpdateCourseRequest $request, string $uuid): JsonResponse
     {
         try {
             $validated = $request->validated();
-            $course = $this->courseService->updateCourse($id, $validated);
+            $course = $this->courseService->updateCourse($uuid, $validated);
 
             return apiResponse(
                 true,
@@ -122,10 +135,13 @@ class CourseController extends Controller
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    /**
+     * Delete a course by UUID
+     */
+    public function destroy(string $uuid): JsonResponse
     {
         try {
-            $result = $this->courseService->deleteCourse($id);
+            $result = $this->courseService->deleteCourse($uuid);
 
             if ($result) {
                 return apiResponse(
@@ -151,10 +167,13 @@ class CourseController extends Controller
         }
     }
 
-    public function getCourseSubjects(int $id): JsonResponse
+    /**
+     * Get course subjects by course UUID
+     */
+    public function getCourseSubjects(string $uuid): JsonResponse
     {
         try {
-            $courseWithSubjects = $this->courseService->getCoursesWithSubjects($id);
+            $courseWithSubjects = $this->courseService->getCoursesWithSubjects($uuid);
 
             return apiResponse(
                 true,
@@ -172,7 +191,10 @@ class CourseController extends Controller
         }
     }
 
-    public function assignSubjects(Request $request, int $id): JsonResponse
+    /**
+     * Assign subjects to course
+     */
+    public function assignSubjects(Request $request, string $uuid): JsonResponse
     {
         try {
             $validated = $request->validate([
@@ -180,7 +202,7 @@ class CourseController extends Controller
                 'subject_ids.*' => 'exists:subjects,id'
             ]);
 
-            $result = $this->courseService->assignSubjectsToCourse($id, $validated['subject_ids']);
+            $result = $this->courseService->assignSubjectsToCourse($uuid, $validated['subject_ids']);
 
             return apiResponse(
                 true,
@@ -198,5 +220,195 @@ class CourseController extends Controller
         }
     }
 
+    /**
+     * Add single subject to course
+     */
+    public function addSubject(Request $request, string $uuid): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'subject_id' => 'required|exists:subjects,id'
+            ]);
 
+            $result = $this->courseService->addSubjectToCourse($uuid, $validated['subject_id']);
+
+            return apiResponse(
+                true,
+                'Subject added to course successfully.',
+                $result
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to add subject to course.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    /**
+     * Remove subject from course
+     */
+    public function removeSubject(string $uuid, int $subjectId): JsonResponse
+    {
+        try {
+            $result = $this->courseService->removeSubjectFromCourse($uuid, $subjectId);
+
+            return apiResponse(
+                true,
+                'Subject removed from course successfully.',
+                $result
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to remove subject from course.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    // Student course methods
+
+    /**
+     * Enroll a student in a course
+     */
+    public function enrollStudent(Request $request, string $uuid): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'student_uuid' => 'required|exists:users,uuid'
+            ]);
+
+            $result = $this->courseService->enrollStudent($uuid, $validated['student_uuid']);
+
+            return apiResponse(
+                true,
+                'Student enrolled successfully.',
+                $result,
+                201
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to enroll student.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    /**
+     * Remove a student from a course
+     */
+    public function removeStudent(string $uuid, string $studentUuid): JsonResponse
+    {
+        try {
+            $result = $this->courseService->removeStudent($uuid, $studentUuid);
+
+            if ($result) {
+                return apiResponse(
+                    true,
+                    'Student removed from course successfully.'
+                );
+            }
+
+            return apiResponse(
+                false,
+                'Failed to remove student from course.',
+                null,
+                500
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to remove student from course.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    /**
+     * Update student enrollment status
+     */
+    public function updateStudentStatus(Request $request, string $uuid, string $studentUuid): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'status' => 'required|in:active,dropped,completed'
+            ]);
+
+            $result = $this->courseService->updateStudentStatus($uuid, $studentUuid, $validated['status']);
+
+            return apiResponse(
+                true,
+                'Student status updated successfully.',
+                $result
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to update student status.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    /**
+     * Get all students enrolled in a course
+     */
+    public function getEnrolledStudents(Request $request, string $uuid): JsonResponse
+    {
+        try {
+            $perPage = $request->query('per_page', 10);
+            $students = $this->courseService->getEnrolledStudents($uuid, (int)$perPage);
+
+            return apiResponse(
+                true,
+                'Enrolled students retrieved successfully.',
+                $students
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to retrieve enrolled students.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
+
+    /**
+     * Check if student is enrolled in course
+     */
+    public function isStudentEnrolled(string $uuid, string $studentUuid): JsonResponse
+    {
+        try {
+            $isEnrolled = $this->courseService->isStudentEnrolled($uuid, $studentUuid);
+
+            return apiResponse(
+                true,
+                'Check completed successfully.',
+                ['is_enrolled' => $isEnrolled]
+            );
+        } catch (\Exception $e) {
+            return apiResponse(
+                false,
+                'Failed to check enrollment status.',
+                null,
+                500,
+                [$e->getMessage()]
+            );
+        }
+    }
 }

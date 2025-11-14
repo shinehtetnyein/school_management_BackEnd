@@ -9,7 +9,19 @@ class ClassRoomApiService implements ClassRoomApiServiceInterface
 {
     public function list(array $filters = [])
     {
-        return Classroom::query()->paginate(15);
+        $classrooms = Classroom::query()->orderBy('id', 'asc')->get()->map(function($classroom) {
+            return [
+                'id' => $classroom->id,
+                'name' => $classroom->name,
+                'created_at' => $classroom->created_at,
+                'updated_at' => $classroom->updated_at,
+            ];
+        })->toArray();
+
+        return [
+            'total_count' => count($classrooms),
+            'classrooms' => $classrooms
+        ];
     }
 
     public function create(array $data)

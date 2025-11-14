@@ -28,7 +28,9 @@ class AuthenticationApiController extends Controller
 
     return apiResponse(true, 'Registration successful', [
         'user' => new UserApiResource($result['user']),
-        'token' => $result['token']
+        'token' => $result['token'],
+        'role' => $result['role'] ?? null,
+        'abilities' => $result['abilities'] ?? null,
     ]);
 }
 
@@ -46,6 +48,8 @@ public function login(Request $request)
         return apiResponse(true, 'Login successful', [
             'user'  => new UserApiResource($result['user']),
             'token' => $result['token'],
+            'role' => $result['role'] ?? null,
+            'abilities' => $result['abilities'] ?? null,
         ]);
 
     } catch (ValidationException $e) {
@@ -58,5 +62,24 @@ public function login(Request $request)
 }
 
 
+    /**
+     * Logout current user (delete current token)
+     */
+    public function logout(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return apiResponse(false, 'Unauthenticated.', null, 401);
+            }
+
+            $this->authService->logout($user);
+
+            return apiResponse(true, 'Logged out successfully.');
+        } catch (\Exception $e) {
+            return apiResponse(false, 'Failed to logout.', null, 500, [$e->getMessage()]);
+        }
+    }
 
 }

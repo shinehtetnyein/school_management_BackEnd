@@ -56,6 +56,6 @@ class ResultApiService implements ResultApiServiceInterface
             }
         }
 
-        return $query->get();
+        return $query->orderBy('id', 'asc')->get();
     }
 }

@@ -20,7 +20,7 @@ class AcademicYearApiService implements AcademicYearApiServiceInterface
                     $query->select('id', 'name', 'email');
                 }
             ])
-            ->orderBy('start_date', 'desc')
+            ->orderBy('id', 'asc')
             ->get()
             ->toArray();
     }
@@ -113,9 +113,9 @@ class AcademicYearApiService implements AcademicYearApiServiceInterface
             ->first();
     }
 
-    public function getAcademicYearsPaginated(int $perPage = 10): LengthAwarePaginator
+    public function getAcademicYearsPaginated(int $perPage = 10): array
     {
-        return AcademicYear::select('academic_years.*')
+        $years = AcademicYear::select('academic_years.*')
             ->with([
                 'createdBy' => function ($query) {
                     $query->select('id', 'name', 'email');
@@ -125,7 +125,21 @@ class AcademicYearApiService implements AcademicYearApiServiceInterface
                 }
             ])
             ->orderBy('start_date', 'desc')
-            ->paginate($perPage);
+            ->get()
+            ->map(function($year) {
+                return [
+                    'id' => $year->id,
+                    'name' => $year->name,
+                    'start_date' => $year->start_date,
+                    'end_date' => $year->end_date,
+                    'is_current' => $year->is_current,
+                ];
+            })->toArray();
+
+        return [
+            'total_count' => count($years),
+            'academic_years' => $years
+        ];
     }
 
     public function getAcademicYearsWithOptions(array $options = []): mixed
@@ -141,11 +155,20 @@ class AcademicYearApiService implements AcademicYearApiServiceInterface
             ])
             ->orderBy('start_date', 'desc');
 
-        if (isset($options['no_pagination']) && $options['no_pagination']) {
-            return $query->get();
-        }
+        $years = $query->get()
+            ->map(function($year) {
+                return [
+                    'id' => $year->id,
+                    'name' => $year->name,
+                    'start_date' => $year->start_date,
+                    'end_date' => $year->end_date,
+                    'is_current' => $year->is_current,
+                ];
+            })->toArray();
 
-        $perPage = $options['per_page'] ?? 10;
-        return $query->paginate($perPage);
+        return [
+            'total_count' => count($years),
+            'academic_years' => $years
+        ];
     }
 }

@@ -3,18 +3,62 @@
 
 namespace Modules\Subject\Services;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Subject\App\Models\Subject;
 
 interface SubjectApiServiceInterface
 {
+    /**
+     * Get all subjects
+     */
     public function getAllSubjects(): array;
-    public function getSubjectById(int $id): ?Subject;
+
+    /**
+     * Get subject by UUID
+     */
+    public function getSubjectByUuid(string $uuid): ?Subject;
+
+    /**
+     * Create a new subject
+     */
     public function createSubject(array $data): Subject;
-    public function updateSubject(int $id, array $data): Subject;
-    public function deleteSubject(int $id): bool;
-    public function getSubjectsPaginated(int $perPage = 10): LengthAwarePaginator;
-    public function getSubjectsByCourse(int $courseId): array;
+
+    /**
+     * Update subject by UUID
+     */
+    public function updateSubject(string $uuid, array $data): Subject;
+
+    /**
+     * Delete subject by UUID
+     */
+    public function deleteSubject(string $uuid): bool;
+
+    /**
+     * Get subjects with pagination
+     */
+    public function getSubjectsPaginated(int $perPage = 10): array;
+
+    /**
+     * Get subjects by course UUID
+     */
+    public function getSubjectsByCourseUuid(string $courseUuid): array;
+
+    /**
+     * Get subjects by class level
+     */
     public function getSubjectsByLevel(string $classLevel): array;
+
+    /**
+     * Search subjects
+     */
     public function searchSubjects(string $searchTerm): array;
+
+    /**
+     * Get subjects for a student (enrolled courses' subjects)
+     */
+    public function getStudentSubjects(string $studentUuid): array;
+
+    /**
+     * Get subject details with teachers info
+     */
+    public function getSubjectWithTeachers(string $uuid): ?array;
 }

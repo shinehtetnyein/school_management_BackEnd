@@ -10,31 +10,27 @@ use Modules\Subject\Services\SubjectApiServiceInterface;
 use Modules\Subject\App\Http\Requests\StoreSubjectRequest;
 use Modules\Subject\App\Http\Requests\UpdateSubjectRequest;
 
+// If the helper function is in the global namespace, use it with backslash prefix
+// Or create the helper function if it doesn't exist
+
 class SubjectApiController extends Controller
 {
     protected $subjectService;
 
-    public function __construct(SubjectApiServiceInterface $subjectService)
-    {
+    public function __construct(SubjectApiServiceInterface $subjectService){
         $this->subjectService = $subjectService;
     }
 
     public function index(Request $request): JsonResponse
     {
         try {
-            [$noPagination, $pagPerPage] = getNoPaginationPagPerPageFromRequest($request);
-            $perPage = $pagPerPage ?? 10;
-
-            if ($noPagination) {
-                $subjects = $this->subjectService->getAllSubjects();
-            } else {
-                $subjects = $this->subjectService->getSubjectsPaginated((int)$perPage);
-            }
+            // Always return the full list of subjects (no pagination)
+            $subjectData = $this->subjectService->getAllSubjects();
 
             return apiResponse(
                 true,
                 'Subjects retrieved successfully.',
-                $subjects
+                $subjectData
             );
         } catch (\Exception $e) {
             return apiResponse(
@@ -56,7 +52,7 @@ class SubjectApiController extends Controller
             return apiResponse(
                 true,
                 'Subject created successfully.',
-                $subject,
+                $this->transformResponse($subject),
                 201
             );
         } catch (\Exception $e) {
@@ -70,10 +66,10 @@ class SubjectApiController extends Controller
         }
     }
 
-    public function show(int $id): JsonResponse
+    public function show(string $uuid): JsonResponse
     {
         try {
-            $subject = $this->subjectService->getSubjectById($id);
+            $subject = $this->subjectService->getSubjectByUuid($uuid);
 
             if (!$subject) {
                 return apiResponse(
@@ -87,7 +83,7 @@ class SubjectApiController extends Controller
             return apiResponse(
                 true,
                 'Subject retrieved successfully.',
-                $subject
+                $this->transformResponse($subject)
             );
         } catch (\Exception $e) {
             return apiResponse(
@@ -100,16 +96,16 @@ class SubjectApiController extends Controller
         }
     }
 
-    public function update(UpdateSubjectRequest $request, int $id): JsonResponse
+    public function update(UpdateSubjectRequest $request, string $uuid): JsonResponse
     {
         try {
             $validated = $request->validated();
-            $subject = $this->subjectService->updateSubject($id, $validated);
+            $subject = $this->subjectService->updateSubject($uuid, $validated);
 
             return apiResponse(
                 true,
                 'Subject updated successfully.',
-                $subject
+                $this->transformResponse($subject)
             );
         } catch (\Exception $e) {
             return apiResponse(
@@ -122,10 +118,10 @@ class SubjectApiController extends Controller
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $uuid): JsonResponse
     {
         try {
-            $result = $this->subjectService->deleteSubject($id);
+            $result = $this->subjectService->deleteSubject($uuid);
 
             if ($result) {
                 return apiResponse(
@@ -151,10 +147,10 @@ class SubjectApiController extends Controller
         }
     }
 
-    public function getByCourse(int $courseId): JsonResponse
+    public function getByCourse(string $courseUuid): JsonResponse
     {
         try {
-            $subjects = $this->subjectService->getSubjectsByCourse($courseId);
+            $subjects = $this->subjectService->getSubjectsByCourseUuid($courseUuid);
 
             return apiResponse(
                 true,
@@ -220,5 +216,23 @@ class SubjectApiController extends Controller
                 [$e->getMessage()]
             );
         }
+    }
+
+    /**
+     * Transform subject model to response format
+     */
+    private function transformResponse($subject): array
+    {
+        return [
+            'uuid' => $subject->uuid,
+            'id' => $subject->id,
+            'subject_code' => $subject->subject_code,
+            'subject_name' => $subject->subject_name,
+            'subject_desc' => $subject->subject_desc,
+            'class_level' => $subject->class_level,
+            'status' => $subject->status,
+            'created_at' => $subject->created_at,
+            'updated_at' => $subject->updated_at,
+        ];
     }
 }

@@ -1,7 +1,7 @@
 <?php
-// Modules/Course/app/Http/Requests/StoreCourseRequest.php
+// Modules/Course/app/Http/Request/StoreCourseRequest.php
 
-namespace Modules\Course\App\Http\Requests;
+namespace Modules\Course\App\Http\Request;
 
 use Illuminate\Foundation\Http\FormRequest;
 
