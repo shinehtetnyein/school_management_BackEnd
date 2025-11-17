@@ -9,6 +9,7 @@ use Modules\Departments\app\Http\Requests\DepartmentRequest;
 use Modules\Departments\app\Http\Requests\EventRequest;
 use Modules\Departments\app\Http\Requests\AnnouncementRequest;
 use Modules\Departments\app\Http\Requests\ScheduleRequest;
+use Modules\Users\User\App\Models\User as UserModel;
 use Modules\Departments\Services\DepartmentApiServiceInterface;
 
 class DepartmentController extends Controller
@@ -141,7 +142,7 @@ class DepartmentController extends Controller
     {
         $validated = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
-            'teacher_id' => 'required|exists:users,id',
+            'teacher_uuid' => 'required|exists:users,uuid',
             'grade_level' => 'required|string',
             'section' => 'required|string',
             'day_of_week' => 'required|integer|min:0|max:6',
@@ -150,8 +151,20 @@ class DepartmentController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'room' => 'required|string',
-            'attendance_required' => 'boolean'
+            'attendance_required' => 'boolean',
+            'substitution_teacher_uuid' => 'nullable|exists:users,uuid'
         ]);
+
+        // Resolve teacher UUIDs to internal numeric IDs for storage
+        $teacher = UserModel::where('uuid', $validated['teacher_uuid'])->firstOrFail();
+        $validated['teacher_id'] = $teacher->id;
+        unset($validated['teacher_uuid']);
+
+        if (!empty($validated['substitution_teacher_uuid'])) {
+            $sub = UserModel::where('uuid', $validated['substitution_teacher_uuid'])->firstOrFail();
+            $validated['substitution_teacher_id'] = $sub->id;
+            unset($validated['substitution_teacher_uuid']);
+        }
 
         $schedule = $this->departmentService->createDepartmentSchedule($id, $validated);
         return response()->json($schedule, 201);

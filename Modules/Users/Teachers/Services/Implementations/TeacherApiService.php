@@ -14,27 +14,17 @@ class TeacherApiService implements TeacherApiServiceInterface
      */
     public function index(int $perPage = 10)
     {
+        // Return Eloquent collection of User models so resources can access model properties
         $teachers = User::whereHas('roles', function($q) {
             $q->where('name', Role::TEACHER->label());
         })
         ->with(['teachingSubjects', 'teachingCourses'])
         ->orderBy('id', 'asc')
-        ->get()
-        ->map(function($teacher) {
-            return [
-                'id' => $teacher->id,
-                'uuid' => $teacher->uuid,
-                'name' => $teacher->name,
-                'email' => $teacher->email,
-                'phone_no' => $teacher->phone_no,
-                'subjects_count' => $teacher->teachingSubjects->count(),
-                'courses_count' => $teacher->teachingCourses->count(),
-            ];
-        })->toArray();
+        ->get();
 
         return [
-            'total_count' => count($teachers),
-            'teachers' => $teachers
+            'total_count' => $teachers->count(),
+            'teachers' => $teachers,
         ];
     }
 

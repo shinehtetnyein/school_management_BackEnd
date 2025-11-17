@@ -27,13 +27,28 @@ class TeacherController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $teachers = $this->teacherService->index();
+            $result = $this->teacherService->index();
 
-            return response()->json([
+            // Service may return a wrapper with pagination/meta, or a collection directly.
+            if (is_array($result) && array_key_exists('teachers', $result)) {
+                $teachers = $result['teachers'];
+                $meta = $result;
+            } else {
+                $teachers = $result;
+                $meta = null;
+            }
+
+            $response = [
                 'success' => true,
                 'message' => 'Teachers retrieved successfully',
                 'data' => TeacherResource::collection($teachers),
-            ]);
+            ];
+
+            if ($meta) {
+                $response['meta'] = $meta;
+            }
+
+            return response()->json($response);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

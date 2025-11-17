@@ -15,7 +15,7 @@ class ScheduleRequest extends FormRequest
     {
         return [
             'subject_id' => 'required|exists:subjects,id',
-            'teacher_id' => 'required|exists:users,id',
+            'teacher_uuid' => 'required|exists:users,uuid',
             'grade_level' => 'required|string',
             'section' => 'required|string',
             'day_of_week' => 'required|integer|min:0|max:6',
@@ -24,7 +24,7 @@ class ScheduleRequest extends FormRequest
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'room' => 'required|string',
-            'substitution_teacher_id' => 'nullable|exists:users,id',
+            'substitution_teacher_uuid' => 'nullable|exists:users,uuid',
             'notes' => 'nullable|string',
             'attendance_required' => 'boolean'
         ];
@@ -35,8 +35,8 @@ class ScheduleRequest extends FormRequest
         return [
             'subject_id.required' => 'Subject is required',
             'subject_id.exists' => 'Selected subject does not exist',
-            'teacher_id.required' => 'Teacher is required',
-            'teacher_id.exists' => 'Selected teacher does not exist',
+            'teacher_uuid.required' => 'Teacher is required',
+            'teacher_uuid.exists' => 'Selected teacher does not exist',
             'grade_level.required' => 'Grade level is required',
             'section.required' => 'Section is required',
             'day_of_week.required' => 'Day of week is required',
@@ -50,7 +50,7 @@ class ScheduleRequest extends FormRequest
             'end_time.date_format' => 'End time must be in HH:mm format',
             'end_time.after' => 'End time must be after start time',
             'room.required' => 'Room is required',
-            'substitution_teacher_id.exists' => 'Selected substitute teacher does not exist'
+            'substitution_teacher_uuid.exists' => 'Selected substitute teacher does not exist'
         ];
     }
 }
