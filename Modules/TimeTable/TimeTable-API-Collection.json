@@ -1,0 +1,629 @@
+{
+  "info": {
+    "_postman_id": "timetable-module-collection",
+    "name": "TimeTable Module API",
+    "description": "Complete CRUD API collection for TimeTable module with all endpoints and examples",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "TimeTable Operations",
+      "item": [
+        {
+          "name": "1. List All Timetables",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables?per_page=15&page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "15"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Retrieve all timetable entries with pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "2. List Timetables - Filter by Classroom & Day",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables?classroom_id=1&day_of_week=Monday&per_page=10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ],
+              "query": [
+                {
+                  "key": "classroom_id",
+                  "value": "1"
+                },
+                {
+                  "key": "day_of_week",
+                  "value": "Monday"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get timetable entries for specific classroom on a specific day"
+          },
+          "response": []
+        },
+        {
+          "name": "3. List Timetables - Filter by Teacher",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables?teacher_id=7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ],
+              "query": [
+                {
+                  "key": "teacher_id",
+                  "value": "7"
+                }
+              ]
+            },
+            "description": "Get all timetable entries assigned to a specific teacher"
+          },
+          "response": []
+        },
+        {
+          "name": "4. List Timetables - Filter by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables?status=active&no_pagination=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active"
+                },
+                {
+                  "key": "no_pagination",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get all active timetable entries without pagination"
+          },
+          "response": []
+        },
+        {
+          "name": "5. Get Single Timetable",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "1"
+              ]
+            },
+            "description": "Retrieve a single timetable entry by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "6. Create New Timetable",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classroom_id\": 1,\n  \"section_id\": 1,\n  \"course_id\": 1,\n  \"day_of_week\": \"Thursday\",\n  \"start_time\": \"10:30\",\n  \"end_time\": \"11:30\",\n  \"subject_id\": 1,\n  \"teacher_id\": 7,\n  \"room_number\": \"I\",\n  \"notes\": \"New Mathematics session\",\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ]
+            },
+            "description": "Create a new timetable entry with all required fields"
+          },
+          "response": []
+        },
+        {
+          "name": "7. Update Timetable - Partial Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"end_time\": \"11:45\",\n  \"teacher_id\": 8,\n  \"notes\": \"Updated mathematics session\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "1"
+              ]
+            },
+            "description": "Update specific fields of a timetable entry"
+          },
+          "response": []
+        },
+        {
+          "name": "8. Update Timetable - Full Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classroom_id\": 1,\n  \"section_id\": 2,\n  \"course_id\": 1,\n  \"day_of_week\": \"Friday\",\n  \"start_time\": \"13:00\",\n  \"end_time\": \"14:00\",\n  \"subject_id\": 2,\n  \"teacher_id\": 9,\n  \"room_number\": \"II\",\n  \"notes\": \"Rescheduled to Friday afternoon\",\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "1"
+              ]
+            },
+            "description": "Update all fields of a timetable entry"
+          },
+          "response": []
+        },
+        {
+          "name": "9. Delete Timetable",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "1"
+              ]
+            },
+            "description": "Delete a timetable entry"
+          },
+          "response": []
+        },
+        {
+          "name": "10. Get Timetable by Classroom and Day",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/classroom-day?classroom_id=1&day_of_week=Monday",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "classroom-day"
+              ],
+              "query": [
+                {
+                  "key": "classroom_id",
+                  "value": "1"
+                },
+                {
+                  "key": "day_of_week",
+                  "value": "Monday"
+                }
+              ]
+            },
+            "description": "Get all timetable entries for a specific classroom on a specific day"
+          },
+          "response": []
+        },
+        {
+          "name": "11. Get Teacher's Schedule",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/teacher-schedule?teacher_id=7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "teacher-schedule"
+              ],
+              "query": [
+                {
+                  "key": "teacher_id",
+                  "value": "7"
+                }
+              ]
+            },
+            "description": "Get complete timetable schedule for a specific teacher"
+          },
+          "response": []
+        }
+      ],
+      "description": "All CRUD operations for TimeTable management"
+    },
+    {
+      "name": "Validation Examples",
+      "item": [
+        {
+          "name": "Create - Missing Required Field",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classroom_id\": 1,\n  \"section_id\": 1,\n  \"day_of_week\": \"Monday\",\n  \"start_time\": \"08:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ]
+            },
+            "description": "Test validation error - missing course_id and end_time"
+          },
+          "response": []
+        },
+        {
+          "name": "Create - Invalid Time Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classroom_id\": 1,\n  \"section_id\": 1,\n  \"course_id\": 1,\n  \"day_of_week\": \"Monday\",\n  \"start_time\": \"10:00\",\n  \"end_time\": \"09:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ]
+            },
+            "description": "Test validation error - end_time before start_time"
+          },
+          "response": []
+        },
+        {
+          "name": "Create - Invalid Day of Week",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classroom_id\": 1,\n  \"section_id\": 1,\n  \"course_id\": 1,\n  \"day_of_week\": \"Funday\",\n  \"start_time\": \"08:00\",\n  \"end_time\": \"09:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables"
+              ]
+            },
+            "description": "Test validation error - invalid day of week"
+          },
+          "response": []
+        },
+        {
+          "name": "Get - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/99999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "99999"
+              ]
+            },
+            "description": "Test 404 error - timetable not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Custom Query - Missing Required Parameter",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/timetables/classroom-day?classroom_id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "timetables",
+                "classroom-day"
+              ],
+              "query": [
+                {
+                  "key": "classroom_id",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Test validation error - missing day_of_week parameter"
+          },
+          "response": []
+        }
+      ],
+      "description": "Test validation and error handling"
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "your_bearer_token_here",
+      "type": "string"
+    }
+  ]
+}
