@@ -14,37 +14,37 @@ class ClassroomSeeder extends Seeder
     {
         $classrooms = [
             [
-                'room_number' => 'A101',
+                'room_number' => 'I',
                 'building' => 'Building A',
                 'room_type' => 'Classroom',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'room_number' => 'A102',
+                'room_number' => 'II',
                 'building' => 'Building A',
                 'room_type' => 'Classroom',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'room_number' => 'B101',
+                'room_number' => 'III',
                 'building' => 'Building B',
                 'room_type' => 'Classroom',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'room_number' => 'B102',
+                'room_number' => 'IV',
                 'building' => 'Building B',
                 'room_type' => 'Classroom',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'room_number' => 'LAB01',
+                'room_number' => 'V',
                 'building' => 'Building C',
-                'room_type' => 'Lab',
+                'room_type' => 'Classroom',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

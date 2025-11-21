@@ -9,8 +9,17 @@ class StudentApiService implements StudentApiServiceInterface
 {
     public function getAllStudents()
     {
-        // Use scopeStudents or hasRole relationship
-        return User::students()->orderBy('id', 'asc')->get();
+        // Use scopeStudents and eager load related academic data for frontend
+        return User::students()
+            ->with([
+                'enrolledCourses',
+                'subjects',
+                'classroom',
+                'section',
+                'results',
+            ])
+            ->orderBy('id', 'asc')
+            ->get();
     }
 
     public function createStudent(array $data)
@@ -24,7 +33,14 @@ class StudentApiService implements StudentApiServiceInterface
 
     public function getStudentById($id)
     {
-        $user = User::findOrFail($id);
+        // eager load relations so single request returns related academic data
+        $user = User::with([
+            'enrolledCourses',
+            'subjects',
+            'classroom',
+            'section',
+            'results',
+        ])->findOrFail($id);
         if ($user->hasRole(Role::STUDENT->value)) {
             return $user;
         }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Courses\App\Providers;
+namespace Modules\TimeTable\app\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Modules\Courses\Services\TimeTableApiServiceInterface;
-use Modules\Users\Student\Services\Implementations\TimeTableApiService;
+use Modules\TimeTable\Services\TimeTableApiServiceInterface;
+use Modules\TimeTable\Services\Implementations\TimeTableApiService;
 
 class TimeTableServiceProvider extends ServiceProvider
 {
@@ -14,7 +14,6 @@ class TimeTableServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Note: The implementation class seems to be StudentApiService based on the provided context files.
         $this->app->bind(TimeTableApiServiceInterface::class, TimeTableApiService::class);
     }
 
@@ -25,10 +24,10 @@ class TimeTableServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
 
-        Route::prefix('api/v1')
+        Route::prefix('api')
             ->middleware('api')
             ->group(function () {
-                require __DIR__ . '/../../routes/api_v1.0.php';
+                require __DIR__ . '/../../routes/api.php';
             });
     }
 }

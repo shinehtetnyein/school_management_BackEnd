@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Modules\TimeTable\app\Http\Controllers\TimeTableApiController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('courses', TimeTableApiController::class);
+    // CRUD operations for timetables
+    Route::apiResource('timetables', TimeTableApiController::class);
 
-    // Additional course routes
-    Route::get('courses/{id}/students', [TimeTableApiController::class, 'getEnrolledStudents']);
-    Route::get('courses/{id}/teachers', [TimeTableApiController::class, 'getAssignedTeachers']);
-    Route::post('courses/{id}/enroll', [TimeTableApiController::class, 'enrollStudents']);
-    Route::post('courses/{id}/assign-teacher', [TimeTableApiController::class, 'assignTeacher']);
+    // Additional timetable routes
+    Route::get('timetables/classroom-day', [TimeTableApiController::class, 'getByClassroomAndDay']);
+    Route::get('timetables/teacher-schedule', [TimeTableApiController::class, 'getByTeacher']);
 });
+

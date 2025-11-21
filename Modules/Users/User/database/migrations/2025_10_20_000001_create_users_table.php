@@ -23,6 +23,10 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('city', 100)->nullable();
             $table->string('country', 100)->nullable();
+            $table->string('nrc', 50)->nullable();
+            $table->string('religion', 100)->nullable();
+            $table->string('mother_tongue', 100)->nullable();
+            $table->string('language', 100)->nullable();
             $table->enum('status', ['active','inactive','suspended'])->default('active');
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('last_login_at')->nullable();

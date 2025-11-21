@@ -32,7 +32,7 @@ class StudentController extends Controller
                 'Students retrieved successfully.',
                 [
                     'total_count' => $totalCount,
-                    'students' => $students
+                    'students' => $students->map(function($s) { return $this->transformStudent($s); })->toArray()
                 ]
             );
         } catch (\Exception $e) {
@@ -158,17 +158,73 @@ class StudentController extends Controller
      */
     private function transformStudent($student): array
     {
+        // include related academic data: courses, subjects, classroom, section, results
+        $courses = collect($student->enrolledCourses ?? [])->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'uuid' => $c->uuid ?? null,
+                'name' => $c->course_name ?? null,
+                'code' => $c->code ?? null,
+            ];
+        })->values()->toArray();
+
+        $subjects = collect($student->subjects ?? [])->map(function ($s) {
+            return [
+                'id' => $s->id,
+                'uuid' => $s->uuid ?? null,
+                'name' => $s->subject_name ?? null,
+                'code' => $s->code ?? null,
+            ];
+        })->values()->toArray();
+
+        $classrooms = collect($student->classroom ?? [])->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'room_number' => $c->room_number ?? null,
+            ];
+        })->values()->toArray();
+
+        $sections = collect($student->section ?? [])->map(function ($s) {
+            return [
+                'id' => $s->id,
+                'name' => $s->name ?? null,
+            ];
+        })->values()->toArray();
+
+        $results = collect($student->results ?? [])->map(function ($r) {
+            return [
+                'id' => $r->id,
+                'exam_id' => $r->exam_id ?? null,
+                'course_id' => $r->course_id ?? null,
+                'marks' => $r->marks ?? null,
+                'status' => $r->status ?? null,
+            ];
+        })->values()->toArray();
+
         return [
             'id' => $student->id,
             'uuid' => $student->uuid ?? null,
+            'roll_no' => $student->roll_no ?? null,
             'name' => $student->name,
             'email' => $student->email,
             'phone_no' => $student->phone_no,
             'first_name' => $student->first_name,
             'last_name' => $student->last_name,
+            'date_of_birth' => $student->date_of_birth,
+            'profile_photo' => $student->profile_photo,
+            'nrc' => $student->nrc,
+            'religion' => $student->religion,
+            'mother_tongue' => $student->mother_tongue,
+            'language' => $student->language,
+            'gender' => $student->gender,
             'status' => $student->status ?? 'active',
             'created_at' => $student->created_at,
             'updated_at' => $student->updated_at,
+            'courses' => $courses,
+            'subjects' => $subjects,
+            'classrooms' => $classrooms,
+            'sections' => $sections,
+            'results' => $results,
         ];
     }
 }

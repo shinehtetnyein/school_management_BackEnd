@@ -1,48 +1,72 @@
 <?php
 
-namespace Modules\Courses\Services;
+namespace Modules\TimeTable\Services;
 
 interface TimeTableApiServiceInterface
 {
     /**
-     * Retrieves a user with optional filtering, relations, and pagination.
+     * Get a single timetable entry by ID with optional relations.
      *
-     * @param string|integer  $id        Filter users by id.
-     * @param string|array  $relations   Related models to include.
-     * @param array         $conds       Additional search conditions:
-     *                                   - 'role' (string): Filter users by role.
-     *                                   - 'email' (string): Filter users by email.
-     *                                   - 'academic_year_id' (string): Filter users by academic year id.
-     *                                   - 'faculty_id' (string): Filter users by faculty id.
-     * @return \Modules\Courses\Models\Course|null
+     * @param int $id
+     * @param string|array|null $relations
+     * @return \Modules\TimeTable\app\Models\TimeTable|null
      */
-    public function get($id = null, $relations = null, $conds = null);
+    public function get($id, $relations = null);
 
     /**
-     * Retrieves a list of users with optional filtering, relations, and pagination.
+     * Get all timetable entries with optional filtering, relations, and pagination.
      *
-     * @param string|array  $relations   Related models to include.
-     * @param string|int    $limit       Number of records to retrieve.
-     * @param string|int    $offset      Number of records to skip.
-     * @param bool          $noPagination Whether to disable pagination (default: true).
-     * @param int|null      $pagPerPage  Number of records per page (if paginated).
-     * @param array         $conds       Additional search conditions:
-     *                                   - 'role' (string): Filter users by role.
-     *                                   - 'email' (string): Filter users by email.
-     *                                   - 'academic_year_id' (string): Filter users by academic year id.
-     *                                   - 'faculty_id' (string): Filter users by faculty id.
+     * @param string|array|null $relations
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param bool|null $noPagination
+     * @param int|null $pagPerPage
+     * @param array|null $conds Additional search conditions (classroom_id, section_id, course_id, day_of_week, teacher_id, status)
      * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Database\Eloquent\Collection
      */
     public function getAll($relations = null, $limit = null, $offset = null, $noPagination = null, $pagPerPage = null, $conds = null);
 
     /**
-     * Create a new user.
-     * @param array $courseData
-     * @return \Modules\Courses\Models\Course|null
+     * Create a new timetable entry.
+     *
+     * @param array $data
+     * @return \Modules\TimeTable\app\Models\TimeTable
      */
-    public function create($courseData);
+    public function create($data);
 
-    public function update($id, $courseData);
+    /**
+     * Update an existing timetable entry.
+     *
+     * @param int $id
+     * @param array $data
+     * @return \Modules\TimeTable\app\Models\TimeTable
+     */
+    public function update($id, $data);
 
+    /**
+     * Delete a timetable entry.
+     *
+     * @param int $id
+     * @return bool
+     */
     public function delete($id);
+
+    /**
+     * Get timetable by classroom and day.
+     *
+     * @param int $classroomId
+     * @param string $dayOfWeek
+     * @param string|array|null $relations
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getByClassroomAndDay($classroomId, $dayOfWeek, $relations = null);
+
+    /**
+     * Get timetable by teacher.
+     *
+     * @param int $teacherId
+     * @param string|array|null $relations
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getByTeacher($teacherId, $relations = null);
 }

@@ -36,6 +36,11 @@ class User extends Authenticatable
     const uuid = 'uuid';
     const first_name = 'first_name';
     const last_name = 'last_name';
+    const roll_no = 'roll_no';
+    const nrc = 'nrc';
+    const religion = 'religion';
+    const mother_tongue = 'mother_tongue';
+    const language = 'language';
     const role = 'role';
     const city = 'city';
     const country = 'country';
@@ -44,6 +49,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'uuid',
+        'roll_no',
         'name',
         'first_name',
         'last_name',
@@ -57,6 +63,10 @@ class User extends Authenticatable
         'address',
         'city',
         'country',
+        'nrc',
+        'religion',
+        'mother_tongue',
+        'language',
         'status',
         'email_verified_at',
         'last_login_at',

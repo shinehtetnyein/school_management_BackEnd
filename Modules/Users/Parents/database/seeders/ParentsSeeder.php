@@ -56,6 +56,18 @@ class ParentsSeeder extends Seeder
                 'status' => 'active',
                 'date_of_birth' => '1980-09-22',
             ],
+            [
+                'first_name' => 'Parent',
+                'last_name' => 'User',
+                'email' => 'parent@gmail.com',
+                'phone_no' => null,
+                'address' => null,
+                'city' => null,
+                'country' => null,
+                'gender' => null,
+                'status' => 'active',
+                'date_of_birth' => null,
+            ],
         ];
 
         foreach ($parents as $data) {

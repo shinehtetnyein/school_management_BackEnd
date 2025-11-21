@@ -16,7 +16,9 @@ class ClassRoomApiController extends Controller
         $classrooms = Classroom::get()->map(function($classroom) {
             return [
                 'id' => $classroom->id,
-                'name' => $classroom->name ?? null,
+                'room_number' => $classroom->room_number ?? null,
+                'building' => $classroom->building ?? null,
+                'room_type' => $classroom->room_type ?? null,
                 'created_at' => $classroom->created_at,
                 'updated_at' => $classroom->updated_at,
             ];
