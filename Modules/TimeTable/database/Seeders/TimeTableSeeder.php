@@ -4,6 +4,12 @@ namespace Modules\TimeTable\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\TimeTable\app\Models\TimeTable;
+use Modules\ClassRoom\app\Models\ClassRoom;
+use Modules\ClassRoom\app\Models\Section;
+use Modules\Course\app\Models\Course;
+use Modules\Subject\App\Models\Subject;
+use Modules\Users\User\App\Models\User;
+use Carbon\Carbon;
 
 class TimeTableSeeder extends Seeder
 {
@@ -17,92 +23,87 @@ class TimeTableSeeder extends Seeder
             return;
         }
 
+        // Resolve related entities dynamically to avoid FK issues with hard-coded IDs
+        $classroom = ClassRoom::first();
+        if (!$classroom) {
+            $this->command->warn('No classrooms found; skipping TimeTable seeding.');
+            return;
+        }
+
+        $section = Section::where('classroom_id', $classroom->id)->first() ?? Section::first();
+        $course = Course::first();
+        $subject = Subject::first();
+        $teacher = User::teachers()->first() ?? User::first();
+
+        if (!$section || !$course) {
+            $this->command->warn('Required related records (section or course) missing; skipping TimeTable seeding.');
+            return;
+        }
+
         $timeTables = [
             [
-                'classroom_id' => 1,
-                'section_id' => 1,
-                'course_id' => 1,
+                'classroom_id' => $classroom->id,
+                'section_id' => $section->id,
+                'course_id' => $course->id,
                 'day_of_week' => 'Monday',
                 'start_time' => '08:00',
                 'end_time' => '09:00',
-                'subject_id' => 1,
-                'teacher_id' => 7, // John Anderson
-                'room_number' => 'I',
+                'subject_id' => $subject->id ?? null,
+                'teacher_id' => $teacher->id ?? null,
+                'room_number' => $classroom->room_number ?? null,
                 'notes' => 'Mathematics class',
                 'status' => 'active',
             ],
             [
-                'classroom_id' => 1,
-                'section_id' => 1,
-                'course_id' => 1,
+                'classroom_id' => $classroom->id,
+                'section_id' => $section->id,
+                'course_id' => $course->id,
                 'day_of_week' => 'Monday',
                 'start_time' => '09:15',
                 'end_time' => '10:15',
-                'subject_id' => 2,
-                'teacher_id' => 8, // Sarah Mitchell
-                'room_number' => 'I',
+                'subject_id' => $subject->id ?? null,
+                'teacher_id' => $teacher->id ?? null,
+                'room_number' => $classroom->room_number ?? null,
                 'notes' => 'English class',
                 'status' => 'active',
             ],
             [
-                'classroom_id' => 1,
-                'section_id' => 1,
-                'course_id' => 1,
+                'classroom_id' => $classroom->id,
+                'section_id' => $section->id,
+                'course_id' => $course->id,
                 'day_of_week' => 'Tuesday',
                 'start_time' => '08:00',
                 'end_time' => '09:00',
-                'subject_id' => 3,
-                'teacher_id' => 9, // Robert Thompson
-                'room_number' => 'I',
+                'subject_id' => $subject->id ?? null,
+                'teacher_id' => $teacher->id ?? null,
+                'room_number' => $classroom->room_number ?? null,
                 'notes' => 'Science class',
-                'status' => 'active',
-            ],
-            [
-                'classroom_id' => 1,
-                'section_id' => 1,
-                'course_id' => 1,
-                'day_of_week' => 'Wednesday',
-                'start_time' => '08:00',
-                'end_time' => '09:00',
-                'subject_id' => 4,
-                'teacher_id' => 10, // Jennifer Garcia
-                'room_number' => 'I',
-                'notes' => 'History class',
-                'status' => 'active',
-            ],
-            [
-                'classroom_id' => 2,
-                'section_id' => 3,
-                'course_id' => 2,
-                'day_of_week' => 'Monday',
-                'start_time' => '08:00',
-                'end_time' => '09:00',
-                'subject_id' => 5,
-                'teacher_id' => 11, // Michael Rodriguez
-                'room_number' => 'II',
-                'notes' => 'Chemistry class',
-                'status' => 'active',
-            ],
-            [
-                'classroom_id' => 2,
-                'section_id' => 3,
-                'course_id' => 2,
-                'day_of_week' => 'Wednesday',
-                'start_time' => '09:15',
-                'end_time' => '10:15',
-                'subject_id' => 6,
-                'teacher_id' => 12, // Amanda Lee
-                'room_number' => 'II',
-                'notes' => 'Physics class',
                 'status' => 'active',
             ],
         ];
 
+        $created = 0;
         foreach ($timeTables as $data) {
-            TimeTable::create($data);
-            $this->command->info("Timetable entry created: {$data['day_of_week']} {$data['start_time']}-{$data['end_time']}");
+            try {
+                // compute duration in minutes between start_time and end_time
+                if (!empty($data['start_time']) && !empty($data['end_time'])) {
+                    try {
+                        $duration = Carbon::parse($data['end_time'])->diffInMinutes(Carbon::parse($data['start_time']));
+                        $data['duration_minutes'] = $duration;
+                    } catch (\Exception $ex) {
+                        // if parsing fails, leave duration null and log
+                        $this->command->warn('Could not compute duration for timetable entry: ' . $ex->getMessage());
+                    }
+                }
+
+                TimeTable::create($data);
+                $created++;
+                $this->command->info("Timetable entry created: {$data['day_of_week']} {$data['start_time']}-{$data['end_time']} (duration: " . ($data['duration_minutes'] ?? 'n/a') . " mins)");
+            } catch (\Exception $e) {
+                $this->command->error('Failed to create timetable entry: ' . $e->getMessage());
+            }
         }
 
-        $this->command->info(count($timeTables) . ' timetable entries created successfully.');
+        $this->command->info((string)$created . ' timetable entries created successfully.');
     }
 }

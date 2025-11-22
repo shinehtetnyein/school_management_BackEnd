@@ -1,0 +1,308 @@
+{
+  "info": {
+    "name": "Classroom Module API",
+    "_postman_id": "classroom-module-collection",
+    "description": "Collection for Classroom endpoints (list/show/create/update/delete). Uses `ClassroomResource` format: includes `schedule` and `schedule_by_day`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "classroom_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "List Classrooms",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/classrooms",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "classrooms"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Example - List",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/classrooms"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"total_count\": 1,\n  \"classrooms\": [\n    {\n      \"id\": 1,\n      \"room_number\": \"A101\",\n      \"building\": \"Main Block\",\n      \"room_type\": \"Lecture\",\n      \"number_of_students\": 30,\n      \"sections\": [\n        { \"id\": 1, \"name\": \"Grade 10 - A\", \"status\": \"active\", \"number_of_students\": 15 },\n        { \"id\": 2, \"name\": \"Grade 10 - B\", \"status\": \"active\", \"number_of_students\": 15 }\n      ],\n      \"schedule\": [\n        {\n          \"id\": 11,\n          \"course_name\": \"Mathematics\",\n          \"subject_name\": \"Algebra\",\n          \"section_name\": \"Grade 10 - A\",\n          \"teacher_name\": \"Mr. John Doe\",\n          \"teacher_email\": \"john@example.com\",\n          \"room_name\": \"A101\",\n          \"day\": \"Monday\",\n          \"start_time\": \"09:00\",\n          \"end_time\": \"10:00\",\n          \"notes\": null,\n          \"number_of_students_in_classroom\": 30,\n          \"number_of_students_in_section\": 15\n        }\n      ],\n      \"schedule_by_day\": {\n        \"Monday\": [\n          {\n            \"id\": 11,\n            \"course_name\": \"Mathematics\",\n            \"subject_name\": \"Algebra\",\n            \"section_name\": \"Grade 10 - A\",\n            \"teacher_name\": \"Mr. John Doe\",\n            \"teacher_email\": \"john@example.com\",\n            \"room_name\": \"A101\",\n            \"day\": \"Monday\",\n            \"start_time\": \"09:00\",\n            \"end_time\": \"10:00\",\n            \"notes\": null,\n            \"number_of_students_in_classroom\": 30,\n            \"number_of_students_in_section\": 15\n          }\n        ]\n      },\n      \"created_at\": \"2025-11-20T12:00:00.000000Z\",\n      \"updated_at\": \"2025-11-20T12:00:00.000000Z\"\n    }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Classroom (by id)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/classrooms/{{classroom_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "classrooms",
+            "{{classroom_id}}"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Example - Get One",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/classrooms/1"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"id\": 1,\n  \"room_number\": \"A101\",\n  \"building\": \"Main Block\",\n  \"room_type\": \"Lecture\",\n  \"number_of_students\": 30,\n  \"sections\": [\n    { \"id\": 1, \"name\": \"Grade 10 - A\", \"status\": \"active\", \"number_of_students\": 15 }\n  ],\n  \"schedule\": [],\n  \"schedule_by_day\": {},\n  \"created_at\": \"2025-11-20T12:00:00.000000Z\",\n  \"updated_at\": \"2025-11-20T12:00:00.000000Z\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create Classroom",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"room_number\": \"B201\",\n  \"building\": \"Science Block\",\n  \"room_type\": \"Lab\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/classrooms",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "classrooms"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Example - Created",
+          "status": "Created",
+          "code": 201,
+          "body": "{\n  \"id\": 2,\n  \"room_number\": \"B201\",\n  \"building\": \"Science Block\",\n  \"room_type\": \"Lab\",\n  \"number_of_students\": 0,\n  \"sections\": [],\n  \"schedule\": [],\n  \"schedule_by_day\": {},\n  \"created_at\": \"2025-11-22T08:00:00.000000Z\",\n  \"updated_at\": \"2025-11-22T08:00:00.000000Z\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Classroom",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"room_number\": \"B201\",\n  \"building\": \"New Science Block\",\n  \"room_type\": \"Lab\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/classrooms/{{classroom_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "classrooms",
+            "{{classroom_id}}"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Example - Updated",
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"id\": 2,\n  \"room_number\": \"B201\",\n  \"building\": \"New Science Block\",\n  \"room_type\": \"Lab\",\n  \"number_of_students\": 0,\n  \"sections\": [],\n  \"schedule\": [],\n  \"schedule_by_day\": {},\n  \"created_at\": \"2025-11-22T08:00:00.000000Z\",\n  \"updated_at\": \"2025-11-22T08:10:00.000000Z\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Delete Classroom",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/classrooms/{{classroom_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "classrooms",
+            "{{classroom_id}}"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Example - Deleted",
+          "status": "No Content",
+          "code": 204,
+          "body": ""
+        }
+      ]
+    }
+    ,
+    {
+      "name": "List Timetables",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Accept", "value": "application/json", "type": "text" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/timetables",
+          "host": ["{{base_url}}"],
+          "path": ["timetables"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Timetable",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" },
+          { "key": "Accept", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"classroom_id\": 1,\n  \"section_id\": 1,\n  \"course_id\": 2,\n  \"subject_id\": 3,\n  \"teacher_id\": 7,\n  \"day_of_week\": \"Monday\",\n  \"start_time\": \"09:00\",\n  \"end_time\": \"10:00\",\n  \"room_number\": \"A101\",\n  \"notes\": null\n}"
+        },
+        "url": { "raw": "{{base_url}}/timetables", "host": ["{{base_url}}"], "path": ["timetables"] }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Timetables By Classroom & Day",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Accept", "value": "application/json", "type": "text" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/timetables/classroom-day?classroom_id=1&day_of_week=Monday",
+          "host": ["{{base_url}}"],
+          "path": ["timetables","classroom-day"],
+          "query": [
+            { "key": "classroom_id", "value": "1" },
+            { "key": "day_of_week", "value": "Monday" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Teacher Schedule",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}", "type": "text" },
+          { "key": "Accept", "value": "application/json", "type": "text" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/timetables/teacher-schedule?teacher_id=7",
+          "host": ["{{base_url}}"],
+          "path": ["timetables","teacher-schedule"],
+          "query": [ { "key": "teacher_id", "value": "7" } ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

@@ -3,7 +3,8 @@
 namespace Modules\ClassRoom\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Modules\ClassRoom\app\Models\Classroom;
+use Modules\ClassRoom\app\Models\Section;
 
 class SectionSeeder extends Seeder
 {
@@ -12,44 +13,19 @@ class SectionSeeder extends Seeder
      */
     public function run(): void
     {
-        $sections = [
-            [
-                'name' => 'Section A',
-                'classroom_id' => 1,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Section B',
-                'classroom_id' => 1,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Section A',
-                'classroom_id' => 2,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Section B',
-                'classroom_id' => 2,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Section A',
-                'classroom_id' => 3,
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ];
+        // Create sections Section A..Section E for every existing classroom using Eloquent
+        $classroomIds = Classroom::pluck('id')->all();
 
-        DB::table('sections')->insert($sections);
+        $letters = ['A', 'B', 'C', 'D', 'E'];
+
+        foreach ($classroomIds as $cid) {
+            foreach ($letters as $letter) {
+                Section::create([
+                    'name' => 'Section ' . $letter,
+                    'classroom_id' => $cid,
+                    'status' => 'active',
+                ]);
+            }
+        }
     }
 }

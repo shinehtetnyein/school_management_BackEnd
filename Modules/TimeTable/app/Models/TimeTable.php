@@ -25,6 +25,7 @@ class TimeTable extends Model
         'day_of_week',
         'start_time',
         'end_time',
+        'duration_minutes',
         'subject_id',
         'teacher_id',
         'room_number',
@@ -35,6 +36,7 @@ class TimeTable extends Model
     protected $casts = [
         'start_time' => 'datetime:H:i',
         'end_time' => 'datetime:H:i',
+        'duration_minutes' => 'integer',
         'status' => 'string',
     ];
 

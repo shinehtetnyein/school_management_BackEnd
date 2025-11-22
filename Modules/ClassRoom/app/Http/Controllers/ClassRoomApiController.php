@@ -5,6 +5,7 @@ namespace Modules\ClassRoom\app\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\ClassRoom\app\Models\Classroom;
+use Modules\ClassRoom\app\Http\Resources\ClassroomResource;
 
 class ClassRoomApiController extends Controller
 {
@@ -13,20 +14,21 @@ class ClassRoomApiController extends Controller
      */
     public function index()
     {
-        $classrooms = Classroom::get()->map(function($classroom) {
-            return [
-                'id' => $classroom->id,
-                'room_number' => $classroom->room_number ?? null,
-                'building' => $classroom->building ?? null,
-                'room_type' => $classroom->room_type ?? null,
-                'created_at' => $classroom->created_at,
-                'updated_at' => $classroom->updated_at,
-            ];
-        })->toArray();
+        // Eager load relations and counts to minimize queries
+        $classrooms = Classroom::with([
+            'sections' => function ($q) {
+                $q->withCount('students');
+            },
+            'timetables' => function ($q) {
+                $q->with(['course', 'subject', 'teacher', 'section' => function ($q2) {
+                    $q2->withCount('students');
+                }]);
+            },
+        ])->withCount('students')->get();
 
         return [
-            'total_count' => count($classrooms),
-            'classrooms' => $classrooms
+            'total_count' => $classrooms->count(),
+            'classrooms' => ClassroomResource::collection($classrooms),
         ];
     }
 
@@ -43,7 +45,18 @@ class ClassRoomApiController extends Controller
      */
     public function show(string $id)
     {
-        return Classroom::findOrFail($id);
+        $classroom = Classroom::with([
+            'sections' => function ($q) {
+                $q->withCount('students');
+            },
+            'timetables' => function ($q) {
+                $q->with(['course', 'subject', 'teacher', 'section' => function ($q2) {
+                    $q2->withCount('students');
+                }]);
+            },
+        ])->withCount('students')->findOrFail($id);
+
+        return new ClassroomResource($classroom);
     }
 
     /**

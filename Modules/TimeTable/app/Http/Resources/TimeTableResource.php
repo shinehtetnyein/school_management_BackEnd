@@ -25,12 +25,12 @@ class TimeTableResource extends JsonResource
             'section_id' => $this->section_id,
             'section' => $this->whenLoaded('section', [
                 'id' => $this->section->id,
-                'name' => $this->section->name,
+                'name' => $this->section->section_name,
             ]),
             'course_id' => $this->course_id,
             'course' => $this->whenLoaded('course', [
                 'id' => $this->course->id,
-                'name' => $this->course->name,
+                'name' => $this->course->course_name,
             ]),
             'day_of_week' => $this->day_of_week,
             'start_time' => $this->start_time,
@@ -38,7 +38,7 @@ class TimeTableResource extends JsonResource
             'subject_id' => $this->subject_id,
             'subject' => $this->whenLoaded('subject', [
                 'id' => $this->subject->id,
-                'name' => $this->subject->name,
+                'name' => $this->subject->subject_name,
             ]),
             'teacher_id' => $this->teacher_id,
             'teacher' => $this->whenLoaded('teacher', [

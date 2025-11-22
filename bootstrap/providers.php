@@ -23,4 +23,5 @@ return [
     Modules\Users\Teachers\app\Providers\TeacherServiceProvider::class,
     Modules\Users\Parents\app\Providers\ParentServiceProvider::class,
     Modules\TimeTable\app\Providers\TimeTableServiceProvider::class,
+    Modules\ClassRoom\app\Providers\ClassRoomServiceProvider::class,
 ];
