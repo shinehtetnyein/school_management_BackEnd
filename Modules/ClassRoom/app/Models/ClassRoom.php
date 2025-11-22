@@ -49,7 +49,8 @@ class Classroom extends Model
      */
     public function sections(): HasMany
     {
-        return $this->hasMany(Section::class, 'classroom_id');
+        // Ensure sections are returned ordered by name (Section A..E)
+        return $this->hasMany(Section::class, 'classroom_id')->orderBy('name');
     }
 
     /**

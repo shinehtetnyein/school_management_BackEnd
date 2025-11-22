@@ -18,6 +18,7 @@ use Modules\Users\Database\Seeders\DefaultStudentSeeder;
 use Modules\Users\Database\Seeders\TeacherSeeder;
 use Modules\Users\Parents\Database\Seeders\ParentsSeeder;
 use Modules\TimeTable\Database\Seeders\TimeTableSeeder;
+use Modules\TimeTable\Database\Seeders\EnsureWeekdaysSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -50,6 +51,7 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             ParentsSeeder::class,
             TimeTableSeeder::class,
+            EnsureWeekdaysSeeder::class,
         ]);
     }
 }

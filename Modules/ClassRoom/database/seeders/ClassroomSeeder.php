@@ -3,7 +3,7 @@
 namespace Modules\ClassRoom\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Modules\ClassRoom\app\Models\Classroom;
 
 class ClassroomSeeder extends Seeder
 {
@@ -12,44 +12,24 @@ class ClassroomSeeder extends Seeder
      */
     public function run(): void
     {
-        $classrooms = [
-            [
-                'room_number' => 'I',
-                'building' => 'Building A',
-                'room_type' => 'Classroom',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'room_number' => 'II',
-                'building' => 'Building A',
-                'room_type' => 'Classroom',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'room_number' => 'III',
-                'building' => 'Building B',
-                'room_type' => 'Classroom',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'room_number' => 'IV',
-                'building' => 'Building B',
-                'room_type' => 'Classroom',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'room_number' => 'V',
-                'building' => 'Building C',
-                'room_type' => 'Classroom',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ];
+        // Create classrooms with Roman numerals I..XII
+        $romans = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+        foreach ($romans as $roomNumber) {
+            $data = [
+                'room_number' => $roomNumber,
+                'building' => 'Main',
+                'room_type' => 'standard',
+            ];
 
-        DB::table('classrooms')->insert($classrooms);
+            $existing = Classroom::where('room_number', $roomNumber)->first();
+            if ($existing) {
+                $this->command->info("Classroom {$roomNumber} already exists, skipping.");
+                continue;
+            }
+
+            $room = Classroom::create($data);
+            $this->command->info("Created classroom: {$room->room_number}");
+        }
     }
 }
+

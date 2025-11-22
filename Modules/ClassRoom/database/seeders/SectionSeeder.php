@@ -13,15 +13,21 @@ class SectionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create sections Section A..Section E for every existing classroom using Eloquent
+        // Ensure sections Section A..Section E exist for every existing classroom (idempotent)
         $classroomIds = Classroom::pluck('id')->all();
 
         $letters = ['A', 'B', 'C', 'D', 'E'];
 
         foreach ($classroomIds as $cid) {
             foreach ($letters as $letter) {
+                $name = 'Section ' . $letter;
+                $exists = Section::where('classroom_id', $cid)->where('name', $name)->exists();
+                if ($exists) {
+                    continue;
+                }
+
                 Section::create([
-                    'name' => 'Section ' . $letter,
+                    'name' => $name,
                     'classroom_id' => $cid,
                     'status' => 'active',
                 ]);

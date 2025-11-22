@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "room_name": "I",
+    "sections": ["Section A", "Section B"],
+    "teachers": [
+      {"id": 7, "name": "John Anderson", "email": "john.anderson@school.com"},
+      {"id": 8, "name": "Sarah Mitchell", "email": "sarah.mitchell@school.com"}
+    ],
+    "days": ["Monday","Tuesday","Wednesday"],
+    "active_now": false,
+    "no_of_students": 120,
+    "no_of_subjects": 5,
+    "course_name": ["Algebra I","Geometry"],
+    "schedule": [
+      {
+        "id": 101,
+        "course_name": "Algebra I",
+        "subject_name": "Mathematics",
+        "section_name": "Section A",
+        "teacher_name": "John Anderson",
+        "teacher_email": "john.anderson@school.com",
+        "room_name": "I",
+        "day": "Monday",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "notes": "Mathematics class",
+        "number_of_students_in_classroom": 120,
+        "number_of_students_in_section": 30,
+        "is_active": false
+      },
+      {
+        "id": 102,
+        "course_name": "Geometry",
+        "subject_name": "Mathematics",
+        "section_name": "Section B",
+        "teacher_name": "Sarah Mitchell",
+        "teacher_email": "sarah.mitchell@school.com",
+        "room_name": "I",
+        "day": "Tuesday",
+        "start_time": "11:00",
+        "end_time": "12:00",
+        "notes": "Geometry class",
+        "number_of_students_in_classroom": 120,
+        "number_of_students_in_section": 28,
+        "is_active": false
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "room_name": "II",
+    "sections": ["Section C","Section D"],
+    "teachers": [
+      {"id": 11, "name": "Michael Rodriguez", "email": "michael.rodriguez@school.com"},
+      {"id": 12, "name": "Amanda Lee", "email": "amanda.lee@school.com"}
+    ],
+    "days": ["Monday","Wednesday","Friday"],
+    "active_now": false,
+    "no_of_students": 95,
+    "no_of_subjects": 4,
+    "course_name": ["Chemistry I","Physics I"],
+    "schedule": [
+      {
+        "id": 201,
+        "course_name": "Chemistry I",
+        "subject_name": "Chemistry",
+        "section_name": "Section C",
+        "teacher_name": "Michael Rodriguez",
+        "teacher_email": "michael.rodriguez@school.com",
+        "room_name": "II",
+        "day": "Monday",
+        "start_time": "09:00",
+        "end_time": "10:30",
+        "notes": "Chemistry lab",
+        "number_of_students_in_classroom": 95,
+        "number_of_students_in_section": 24,
+        "is_active": false
+      },
+      {
+        "id": 202,
+        "course_name": "Physics I",
+        "subject_name": "Physics",
+        "section_name": "Section D",
+        "teacher_name": "Amanda Lee",
+        "teacher_email": "amanda.lee@school.com",
+        "room_name": "II",
+        "day": "Wednesday",
+        "start_time": "13:00",
+        "end_time": "14:30",
+        "notes": "Physics practical",
+        "number_of_students_in_classroom": 95,
+        "number_of_students_in_section": 22,
+        "is_active": false
+      }
+    ]
+  }
+]

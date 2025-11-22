@@ -4,6 +4,8 @@ namespace Modules\ClassRoom\app\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class ClassroomResource extends JsonResource
 {
@@ -14,69 +16,97 @@ class ClassroomResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // base classroom fields
-        $classroom = [
+        // Build resource with the fields you requested:
+        // room_name, sections (names), teachers (unique list), days, no_of_students, no_of_subjects, course_name
+
+        // room name
+        $roomName = $this->room_number ?? data_get($this, 'room_number') ?? null;
+
+        // ensure related models are loaded from DB if not already
+        $model = $this->resource;
+        if ($model instanceof Model) {
+            $model->loadMissing(['sections', 'timetables.teacher', 'timetables.subject', 'timetables.course', 'timetables.section', 'students']);
+        }
+
+        // sections (names) - ensure unique and ordered
+        $sectionNames = $model->sections->pluck('name')->filter()->unique()->sort()->values()->all();
+
+        // Timetables (now guaranteed to be available via loadMissing)
+        $timetables = $model->timetables ?? collect();
+
+        // teachers: unique list from timetables
+        $teachers = collect($timetables)->flatMap(function ($tt) {
+            $teacher = data_get($tt, 'teacher') ?? (is_object($tt) && isset($tt->teacher) ? $tt->teacher : null);
+            if ($teacher) {
+                return [[
+                    'id' => $teacher->id ?? data_get($teacher, 'id'),
+                    'name' => $teacher->name ?? data_get($teacher, 'name'),
+                    'email' => $teacher->email ?? data_get($teacher, 'email'),
+                ]];
+            }
+            return [];
+        })->unique('id')->values()->all();
+
+        // days: unique ordered days from timetables (Monday..Friday priority)
+        $days = collect($timetables)->pluck('day_of_week')->filter()->unique()->values()->all();
+
+        // number of students (class total)
+        $noOfStudents = $this->students_count ?? $this->students()->count();
+
+        // number of subjects: distinct subject ids in timetables
+        $noOfSubjects = collect($timetables)->pluck('subject_id')->filter()->unique()->count();
+
+        // course_name: unique course names from timetables
+        $courseNames = collect($timetables)->map(function ($tt) {
+            return data_get($tt, 'course.course_name') ?? data_get($tt, 'course_name') ?? null;
+        })->filter()->unique()->values()->all();
+
+        return [
             'id' => $this->id ?? null,
-            'uuid' => $this->uuid ?? null,
-            'room_number' => $this->room_number ?? data_get($this, 'room_number'),
-            'building' => $this->building ?? data_get($this, 'building'),
-            'room_type' => $this->room_type ?? data_get($this, 'room_type'),
-            'created_at' => optional($this->created_at)->toDateTimeString() ?? null,
-            'updated_at' => optional($this->updated_at)->toDateTimeString() ?? null,
+            'room_name' => $roomName,
+            'sections' => $sectionNames,
+            'teachers' => $teachers,
+            'days' => $days,
+            // active_now: true if any timetable entry for this classroom is active now
+            'active_now' => $this->computeActiveNow($timetables),
+            'no_of_students' => (int) ($noOfStudents ?? 0),
+            'no_of_subjects' => (int) $noOfSubjects,
+            'course_name' => $courseNames,
         ];
+    }
 
-        // counts
-        $classroom['number_of_students'] = $this->students_count ?? $this->number_of_students ?? null;
-
-        // courses: try relationship then fallback to provided data
-        $courses = [];
-        if ($this->relationLoaded('timetables') && $this->timetables) {
-            foreach ($this->timetables as $tt) {
-                $name = data_get($tt, 'course.course_name') ?? data_get($tt, 'course_name');
-                if ($name) $courses[] = $name;
+    /**
+     * Determine if any timetable entry is active now for the classroom.
+     */
+    protected function computeActiveNow($timetables): bool
+    {
+        try {
+            $now = Carbon::now();
+            $cutoff = Carbon::today()->setTime(15, 0, 0);
+            if ($now->greaterThanOrEqualTo($cutoff)) {
+                return false;
             }
-        }
-        $classroom['courses'] = array_values(array_unique(array_filter($courses)));
 
-        // sections list with counts
-        $sections = [];
-        if ($this->relationLoaded('sections') && $this->sections) {
-            foreach ($this->sections as $section) {
-                $sections[] = [
-                    'id' => $section->id ?? null,
-                    'name' => $section->name ?? data_get($section, 'name'),
-                    'students_count' => $section->students_count ?? null,
-                ];
+            foreach ($timetables as $tt) {
+                $startVal = data_get($tt, 'start_time') ?? (is_object($tt) && isset($tt->start_time) ? $tt->start_time : null);
+                $endVal = data_get($tt, 'end_time') ?? (is_object($tt) && isset($tt->end_time) ? $tt->end_time : null);
+                if (!$startVal || !$endVal) continue;
+
+                try {
+                    $start = Carbon::parse($startVal);
+                    $end = Carbon::parse($endVal);
+                } catch (\Exception $e) {
+                    continue;
+                }
+
+                if ($now->greaterThanOrEqualTo($start) && $now->lessThan($end)) {
+                    return true;
+                }
             }
+
+            return false;
+        } catch (\Exception $e) {
+            return false;
         }
-        $classroom['sections'] = $sections;
-
-        // schedule: prefer relation 'timetables' or accessor 'schedule'
-        $scheduleItems = null;
-        if ($this->relationLoaded('timetables') && $this->timetables) {
-            $scheduleItems = ScheduleResource::collection($this->timetables);
-        } elseif (isset($this->schedule)) {
-            $scheduleItems = ScheduleResource::collection(collect($this->schedule));
-        }
-
-        $classroom['schedule'] = $scheduleItems ?? [];
-
-        // schedule_by_day grouping
-        $grouped = [];
-        $rawItems = [];
-        if ($scheduleItems instanceof \Illuminate\Http\Resources\Json\AnonymousResourceCollection) {
-            $rawItems = $scheduleItems->resolve();
-        } elseif (is_array($scheduleItems)) {
-            $rawItems = $scheduleItems;
-        }
-
-        foreach ($rawItems as $item) {
-            $day = $item['day'] ?? ($item['day_of_week'] ?? 'Unspecified');
-            $grouped[$day][] = $item;
-        }
-
-        $classroom['schedule_by_day'] = $grouped;
-
-        return $classroom;
     }
 }

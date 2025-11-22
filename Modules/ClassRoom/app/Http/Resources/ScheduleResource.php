@@ -30,6 +30,8 @@ class ScheduleResource extends JsonResource
             'notes' => $this->notes ?? data_get($this, 'notes') ?? null,
             'number_of_students_in_classroom' => data_get($this, 'number_of_students_in_classroom') ?? null,
             'number_of_students_in_section' => isset($this->section) ? ($this->section->students_count ?? data_get($this, 'number_of_students_in_section')) : data_get($this, 'number_of_students_in_section'),
+            // active flag: true when current time is between start and end AND before 15:00
+            'is_active' => $this->computeIsActive(),
         ];
     }
 
@@ -50,6 +52,35 @@ class ScheduleResource extends JsonResource
             return Carbon::parse($value)->format('H:i');
         } catch (\Exception $e) {
             return (string) $value;
+        }
+    }
+
+    /**
+     * Compute whether the timetable entry should be active now.
+     * Returns false if current local time is on/after 15:00.
+     */
+    protected function computeIsActive()
+    {
+        try {
+            $now = Carbon::now();
+
+            // Hard cutoff at 15:00 today
+            $cutoff = Carbon::today()->setTime(15, 0, 0);
+            if ($now->greaterThanOrEqualTo($cutoff)) {
+                return false;
+            }
+
+            // determine start and end times for this entry
+            $startVal = data_get($this, 'start_time') ?? $this->start_time ?? null;
+            $endVal = data_get($this, 'end_time') ?? $this->end_time ?? null;
+            if (!$startVal || !$endVal) return false;
+
+            $start = Carbon::parse($startVal);
+            $end = Carbon::parse($endVal);
+
+            return $now->greaterThanOrEqualTo($start) && $now->lessThan($end);
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }
