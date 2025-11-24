@@ -7,37 +7,38 @@ use Modules\Results\app\Models\Result;
 
 class ResultApiService implements ResultApiServiceInterface
 {
+    use \Modules\Common\Services\CrudServiceTrait;
+
+    protected string $modelClass = Result::class;
+
     public function getAllResults()
     {
-        return Result::all();
+        return $this->list([]);
     }
 
     public function createResult(array $data)
     {
-        return Result::create($data);
+        return $this->create($data);
     }
 
     public function getResultById($id)
     {
-        return Result::findOrFail($id);
+        return $this->show((int)$id);
     }
 
     public function updateResult($id, array $data)
     {
-        $result = Result::findOrFail($id);
-        $result->update($data);
-        return $result;
+        return $this->update((int)$id, $data);
     }
 
     public function deleteResult($id)
     {
-        $result = Result::findOrFail($id);
-        $result->delete();
+        return $this->delete((int)$id);
     }
 
     public function find(int $id)
     {
-        return $this->getResultById($id);
+        return $this->show($id);
     }
 
     public function list(array $filters = [])

@@ -1,0 +1,201 @@
+{
+  "info": {
+    "name": "School Management API - Auto-generated",
+    "_postman_id": "school-management-auto-2025-11-24",
+    "description": "Postman collection auto-generated from module route files. Replace {{base_url}} and {{auth_token}} before use.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"user@example.com\",\n  \"password\": \"secret\"\n}" },
+            "url": { "raw": "{{base_url}}/api/register", "host": ["{{base_url}}"], "path": ["api","register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"secret\"\n}" },
+            "url": { "raw": "{{base_url}}/api/login", "host": ["{{base_url}}"], "path": ["api","login"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{auth_token}}" } ],
+            "url": { "raw": "{{base_url}}/api/logout", "host": ["{{base_url}}"], "path": ["api","logout"] }
+          }
+        },
+        {
+          "name": "Google OAuth Redirect",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/google", "host": ["{{base_url}}"], "path": ["api","google"] } }
+        },
+        {
+          "name": "Google OAuth Callback",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/google/callback", "host": ["{{base_url}}"], "path": ["api","google","callback"] } }
+        }
+      ]
+    },
+
+    {
+      "name": "Users",
+      "item": [
+        { "name": "Users - List", "request": { "method": "GET", "header": [{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/users", "host":["{{base_url}}"], "path":["api","users"] } } },
+        { "name": "Users - Create", "request": { "method": "POST", "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{auth_token}}"}], "body": {"mode":"raw","raw":"{}"}, "url": { "raw": "{{base_url}}/api/users", "host":["{{base_url}}"], "path":["api","users"] } } }
+      ]
+    },
+
+    {
+      "name": "Teachers",
+      "item": [
+        { "name": "List Teachers", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/teachers", "host":["{{base_url}}"], "path":["api","v1","teachers"] } } },
+        { "name": "Get Teacher", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/teachers/:id", "host":["{{base_url}}"], "path":["api","v1","teachers",":id"] } } },
+        { "name": "Get Teachers By Department", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/teachers/department/:departmentId", "host":["{{base_url}}"], "path":["api","v1","teachers","department",":departmentId"] } } },
+        { "name": "Assign Subject to Teacher", "request": { "method": "POST", "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{auth_token}}"}], "body":{"mode":"raw","raw":"{}"}, "url": { "raw": "{{base_url}}/api/v1/teachers/:uuid/assign-subject", "host":["{{base_url}}"], "path":["api","v1","teachers",":uuid","assign-subject"] } } }
+      ]
+    },
+
+    {
+      "name": "Students",
+      "item": [
+        { "name": "List Students", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/students", "host":["{{base_url}}"], "path":["api","students"] } } },
+        { "name": "Get Student", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/students/:id", "host":["{{base_url}}"], "path":["api","students",":id"] } } }
+      ]
+    },
+
+    {
+      "name": "Subjects",
+      "item": [
+        { "name": "List Subjects", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/subjects", "host":["{{base_url}}"], "path":["api","subjects"] } } },
+        { "name": "Get Subject", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/subjects/:uuid", "host":["{{base_url}}"], "path":["api","subjects",":uuid"] } } },
+        { "name": "Get Subjects by Course", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/subjects/course/:courseUuid", "host":["{{base_url}}"], "path":["api","subjects","course",":courseUuid"] } } },
+        { "name": "Get Student Subjects", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/students/:studentUuid/subjects", "host":["{{base_url}}"], "path":["api","students",":studentUuid","subjects"] } } }
+      ]
+    },
+
+    {
+      "name": "Parents",
+      "item": [
+        { "name": "List Parents", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/parents", "host":["{{base_url}}"], "path":["api","parents"] } } }
+      ]
+    },
+
+    {
+      "name": "Librarians",
+      "item": [
+        { "name": "List Librarians", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/librarians", "host":["{{base_url}}"], "path":["api","v1","librarians"] } } },
+        { "name": "Create Librarian", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"},{"key":"Content-Type","value":"application/json"}], "body":{"mode":"raw","raw":"{}"}, "url": { "raw": "{{base_url}}/api/v1/librarians", "host":["{{base_url}}"], "path":["api","v1","librarians"] } } }
+      ]
+    },
+
+    {
+      "name": "Accountants",
+      "item": [
+        { "name": "List Accountants", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/accountants", "host":["{{base_url}}"], "path":["api","v1","accountants"] } } }
+      ]
+    },
+
+    {
+      "name": "Attendance",
+      "item": [
+        { "name": "List Attendance", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/attendances", "host":["{{base_url}}"], "path":["api","v1","attendances"] } } },
+        { "name": "Get Attendance", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/attendances/:id", "host":["{{base_url}}"], "path":["api","v1","attendances",":id"] } } },
+        { "name": "Bulk Store Attendance", "request": { "method": "POST", "header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{auth_token}}"}], "body":{"mode":"raw","raw":"[]"}, "url": { "raw": "{{base_url}}/api/v1/attendances/bulk", "host":["{{base_url}}"], "path":["api","v1","attendances","bulk"] } } }
+      ]
+    },
+
+    {
+      "name": "Homework",
+      "item": [
+        { "name": "List Homeworks", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/homeworks", "host":["{{base_url}}"], "path":["api","v1","homeworks"] } } },
+        { "name": "Get Homework", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/homeworks/:id", "host":["{{base_url}}"], "path":["api","v1","homeworks",":id"] } } },
+        { "name": "Create Homework", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"},{"key":"Content-Type","value":"application/json"}], "body":{"mode":"raw","raw":"{}"}, "url": { "raw": "{{base_url}}/api/v1/homeworks", "host":["{{base_url}}"], "path":["api","v1","homeworks"] } } }
+      ]
+    },
+
+    {
+      "name": "Exams",
+      "item": [
+        { "name": "List Exams", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/exams", "host":["{{base_url}}"], "path":["api","v1","exams"] } } },
+        { "name": "Get Exam", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/exams/:id", "host":["{{base_url}}"], "path":["api","v1","exams",":id"] } } },
+        { "name": "Create Exam", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"},{"key":"Content-Type","value":"application/json"}], "body":{"mode":"raw","raw":"{}"}, "url": { "raw": "{{base_url}}/api/v1/exams", "host":["{{base_url}}"], "path":["api","v1","exams"] } } },
+        { "name": "Submit Exam (student)", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "body":{"mode":"formdata","formdata":[{"key":"answers","value":"{\"q1\":\"a\"}","type":"text"},{"key":"file","type":"file"}]}, "url": { "raw": "{{base_url}}/api/v1/exams/:id/submit", "host":["{{base_url}}"], "path":["api","v1","exams",":id","submit"] } } },
+        { "name": "Get Exam Schedule", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/exams/:id/schedule", "host":["{{base_url}}"], "path":["api","v1","exams",":id","schedule"] } } },
+        { "name": "Grade Exam (teacher)", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"},{"key":"Content-Type","value":"application/json"}], "body":{"mode":"raw","raw":"{\n  \"student_id\":123,\n  \"marks\": 85,\n  \"grade\": \"A\"\n}"}, "url": { "raw": "{{base_url}}/api/v1/exams/:id/grade", "host":["{{base_url}}"], "path":["api","v1","exams",":id","grade"] } } }
+      ]
+    },
+
+    {
+      "name": "Library (Books)",
+      "item": [
+        { "name": "List Books", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/books", "host":["{{base_url}}"], "path":["api","books"] } } },
+        { "name": "Create Book", "request": { "method": "POST", "header":[{"key":"Content-Type","value":"application/json"}], "body":{"mode":"raw","raw":"{}"}, "url": { "raw": "{{base_url}}/api/books", "host":["{{base_url}}"], "path":["api","books"] } } }
+      ]
+    },
+
+    {
+      "name": "Courses",
+      "item": [
+        { "name": "List Courses", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/courses", "host":["{{base_url}}"], "path":["api","courses"] } } },
+        { "name": "Get Course", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/courses/:uuid", "host":["{{base_url}}"], "path":["api","courses",":uuid"] } } },
+        { "name": "Enrollments - List", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/enrollments", "host":["{{base_url}}"], "path":["api","enrollments"] } } },
+        { "name": "Enroll Student", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"},{"key":"Content-Type","value":"application/json"}], "body":{"mode":"raw","raw":"{}"}, "url": { "raw": "{{base_url}}/api/courses/:uuid/enroll-student", "host":["{{base_url}}"], "path":["api","courses",":uuid","enroll-student"] } } }
+      ]
+    },
+
+    {
+      "name": "Academic Years",
+      "item": [
+        { "name": "List Years", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/years", "host":["{{base_url}}"], "path":["api","years"] } } },
+        { "name": "Get Current Year", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/years/current", "host":["{{base_url}}"], "path":["api","years","current"] } } },
+        { "name": "Set Current Year", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/years/:id/set-current", "host":["{{base_url}}"], "path":["api","years",":id","set-current"] } } }
+      ]
+    },
+
+    {
+      "name": "Classrooms",
+      "item": [
+        { "name": "List Classrooms", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/classrooms", "host":["{{base_url}}"], "path":["api","classrooms"] } } }
+      ]
+    },
+
+    {
+      "name": "Results",
+      "item": [
+        { "name": "List Results", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/v1/results", "host":["{{base_url}}"], "path":["api","v1","results"] } } }
+      ]
+    },
+
+    {
+      "name": "Admin",
+      "item": [
+        { "name": "Admin - Users (List)", "request": { "method": "GET", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/admin/users", "host":["{{base_url}}"], "path":["api","admin","users"] } } },
+        { "name": "Assign Role", "request": { "method": "POST", "header":[{"key":"Authorization","value":"Bearer {{auth_token}}"}], "url": { "raw": "{{base_url}}/api/admin/users/:id/assign-role", "host":["{{base_url}}"], "path":["api","admin","users",":id","assign-role"] } } }
+      ]
+    }
+
+  ]
+}

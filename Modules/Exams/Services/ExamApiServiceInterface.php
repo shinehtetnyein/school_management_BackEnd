@@ -13,4 +13,13 @@ interface ExamApiServiceInterface
     public function delete(int $id);
 
     public function find(int $id);
+
+    // Domain-specific actions
+    public function getResults(int $id);
+
+    public function submitExam(int $id, array $data);
+
+    public function getSchedule(int $id);
+
+    public function gradeExam(int $id, array $data);
 }

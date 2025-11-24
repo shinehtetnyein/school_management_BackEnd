@@ -7,25 +7,9 @@ use Modules\Attendance\Services\AttendanceApiServiceInterface;
 
 class AttendanceApiService implements AttendanceApiServiceInterface
 {
-    public function list(array $filters = [])
-    {
-        $attendance = Attendance::query()->orderBy('id', 'asc')->get()->map(function($att) {
-            return [
-                'id' => $att->id,
-                'date' => $att->date,
-                'created_at' => $att->created_at,
-                'updated_at' => $att->updated_at,
-            ];
-        })->toArray();
+    use \Modules\Common\Services\CrudServiceTrait;
 
-        return [
-            'total_count' => count($attendance),
-            'attendance' => $attendance
-        ];
-    }
+    protected string $modelClass = Attendance::class;
 
-    public function create(array $data)
-    {
-        return Attendance::create($data);
-    }
+    // You may add custom methods specific to Attendance here in future.
 }

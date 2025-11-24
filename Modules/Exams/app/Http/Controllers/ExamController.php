@@ -5,36 +5,36 @@ namespace Modules\Exams\app\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Exams\App\Models\Exam;
-
+use Modules\Exams\Services\ExamApiServiceInterface;
+use Modules\Exams\app\Http\Request\ExamRequest;
+use Modules\Exams\app\Http\Request\SubmitExamRequest;
+use Modules\Exams\app\Http\Request\GradeExamRequest;
+use Modules\Exams\app\Http\Resource\ExamResource;
 
 class ExamController extends Controller
 {
+    protected ExamApiServiceInterface $service;
+
+    public function __construct(ExamApiServiceInterface $service)
+    {
+        $this->service = $service;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $exams = Exam::get()->map(function($exam) {
-            return [
-                'id' => $exam->id,
-                'title' => $exam->title ?? null,
-                'created_at' => $exam->created_at,
-                'updated_at' => $exam->updated_at,
-            ];
-        })->toArray();
-
-        return [
-            'total_count' => count($exams),
-            'exams' => $exams
-        ];
+        $collection = $this->service->list($request->all());
+        return ExamResource::collection($collection);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ExamRequest $request)
     {
-        return Exam::create($request->validated());
+        $exam = $this->service->create($request->validated());
+        return new ExamResource($exam);
     }
 
     /**
@@ -42,17 +42,16 @@ class ExamController extends Controller
      */
     public function show(string $id)
     {
-        return Exam::findOrFail($id);
+        return new ExamResource($this->service->find((int)$id));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ExamRequest $request, string $id)
     {
-        $exam = Exam::findOrFail($id);
-        $exam->update($request->validated());
-        return $exam;
+        $exam = $this->service->update((int)$id, $request->validated());
+        return new ExamResource($exam);
     }
 
     /**
@@ -60,7 +59,8 @@ class ExamController extends Controller
      */
     public function destroy(string $id)
     {
-        return Exam::findOrFail($id)->delete();
+        $this->service->delete((int)$id);
+        return response()->json(null, 204);
     }
 
     /**
@@ -68,17 +68,22 @@ class ExamController extends Controller
      */
     public function getResults(string $id)
     {
-        $exam = Exam::findOrFail($id);
-        return $exam->results()->with('student')->get();
+        return $this->service->getResults((int)$id);
     }
 
     /**
      * Submit an exam
      */
-    public function submitExam(Request $request, string $id)
+    public function submitExam(SubmitExamRequest $request, string $id)
     {
-        $exam = Exam::findOrFail($id);
-        return $exam->submissions()->create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('file')) {
+            $path = $request->file('file')->store('exam_submissions', 'public');
+            $data['file'] = $path;
+        }
+
+        return $this->service->submitExam((int)$id, $data);
     }
 
     /**
@@ -86,16 +91,15 @@ class ExamController extends Controller
      */
     public function getSchedule(string $id)
     {
-        $exam = Exam::findOrFail($id);
-        return $exam->schedule;
+        return $this->service->getSchedule((int)$id);
     }
 
     /**
      * Grade an exam submission
      */
-    public function gradeExam(Request $request, string $id)
+    public function gradeExam(GradeExamRequest $request, string $id)
     {
-        $exam = Exam::findOrFail($id);
-        return $exam->grade($request->validated());
+        $data = $request->validated();
+        return $this->service->gradeExam((int)$id, $data);
     }
 }

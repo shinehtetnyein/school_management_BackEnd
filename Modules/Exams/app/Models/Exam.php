@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Courses\Models\Course;
-use Modules\Results\Models\Result;
+use Modules\Results\app\Models\Result;
+use Modules\Exams\App\Models\Submission;
 use Carbon\Carbon;
 
 class Exam extends Model
@@ -61,6 +62,11 @@ class Exam extends Model
     {
         return $this->hasMany(Result::class)
             ->orderBy('marks', 'desc');
+    }
+
+    public function submissions(): HasMany
+    {
+        return $this->hasMany(Submission::class, 'exam_id')->orderBy('submitted_at', 'desc');
     }
 
     // Scopes

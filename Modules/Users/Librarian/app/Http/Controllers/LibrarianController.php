@@ -4,15 +4,25 @@ namespace Modules\Users\Librarian\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Users\Librarian\Services\LibrarianApiServiceInterface;
+use Modules\Users\Librarian\app\Http\Request\LibrarianRequest;
+use Modules\Users\Librarian\app\Http\Resource\LibrarianResource;
 
 class LibrarianController extends Controller
 {
+    protected LibrarianApiServiceInterface $service;
+
+    public function __construct(LibrarianApiServiceInterface $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('librarian::index');
+        return $this->service->list($request->all());
     }
 
     /**
@@ -20,20 +30,24 @@ class LibrarianController extends Controller
      */
     public function create()
     {
-        return view('librarian::create');
+        return response()->json(['fields' => ['name', 'email', 'password']], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(LibrarianRequest $request)
+    {
+        $user = $this->service->create($request->validated());
+        return new LibrarianResource($user);
+    }
 
     /**
      * Show the specified resource.
      */
     public function show($id)
     {
-        return view('librarian::show');
+        return new LibrarianResource($this->service->show((int) $id));
     }
 
     /**
@@ -41,16 +55,24 @@ class LibrarianController extends Controller
      */
     public function edit($id)
     {
-        return view('librarian::edit');
+        return new LibrarianResource($this->service->show((int) $id));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(LibrarianRequest $request, $id)
+    {
+        $user = $this->service->update((int)$id, $request->validated());
+        return new LibrarianResource($user);
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy($id)
+    {
+        $this->service->delete((int)$id);
+        return response()->json(null, 204);
+    }
 }

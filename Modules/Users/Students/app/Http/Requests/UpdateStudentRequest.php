@@ -26,8 +26,10 @@ class UpdateStudentRequest extends FormRequest
             'first_name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $studentId,
+            'roll_no' => 'sometimes|string|unique:users,roll_no,' . $studentId,
             'phone_no' => 'sometimes|string|max:20',
             'status' => 'sometimes|in:active,inactive,suspended',
+            'enrollment_date' => 'sometimes|nullable|date',
         ];
     }
 }

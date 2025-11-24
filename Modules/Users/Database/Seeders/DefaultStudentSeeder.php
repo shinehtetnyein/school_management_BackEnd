@@ -18,8 +18,10 @@ class DefaultStudentSeeder extends Seeder
             [
                 'first_name' => 'Alice',
                 'last_name' => 'Johnson',
+                'roll_no' => 'STU-2001',
+                'enrollment_date' => '2025-06-01',
                 'email' => 'alice.johnson@school.com',
-                'phone_no' => '0951234567',
+                'phone_no'   => '0951234567',
                 'address' => '123 Main Street',
                 'city' => 'Yangon',
                 'country' => 'Myanmar',
@@ -38,6 +40,8 @@ class DefaultStudentSeeder extends Seeder
             [
                 'first_name' => 'Bob',
                 'last_name' => 'Smith',
+                'roll_no' => 'STU-2002',
+                'enrollment_date' => '2025-06-02',
                 'email' => 'bob.smith@school.com',
                 'phone_no' => '0952345678',
                 'address' => '456 Oak Avenue',
@@ -58,6 +62,8 @@ class DefaultStudentSeeder extends Seeder
             [
                 'first_name' => 'Carol',
                 'last_name' => 'Williams',
+                'roll_no' => 'STU-2003',
+                'enrollment_date' => '2025-06-03',
                 'email' => 'carol.williams@school.com',
                 'phone_no' => '0953456789',
                 'address' => '789 Pine Road',
@@ -78,6 +84,8 @@ class DefaultStudentSeeder extends Seeder
             [
                 'first_name' => 'David',
                 'last_name' => 'Brown',
+                'roll_no' => 'STU-2004',
+                'enrollment_date' => '2025-06-04',
                 'email' => 'david.brown@school.com',
                 'phone_no' => '0954567890',
                 'address' => '321 Elm Street',
@@ -98,6 +106,8 @@ class DefaultStudentSeeder extends Seeder
             [
                 'first_name' => 'Emma',
                 'last_name' => 'Davis',
+                'roll_no' => 'STU-2005',
+                'enrollment_date' => '2025-06-05',
                 'email' => 'emma.davis@school.com',
                 'phone_no' => '0955678901',
                 'address' => '654 Maple Drive',
@@ -124,8 +134,9 @@ class DefaultStudentSeeder extends Seeder
             $classroomId = $data['classroom_id'];
             $sectionId = $data['section_id'];
 
-            // Remove relationship data from array
-            unset($data['courses'], $data['subjects'], $data['classroom_id'], $data['section_id']);
+            // Extract and remove relationship data from array
+            $enrollmentDate = $data['enrollment_date'] ?? null;
+            unset($data['courses'], $data['subjects'], $data['classroom_id'], $data['section_id'], $data['enrollment_date']);
 
             // Create the user
             $student = User::create([
@@ -143,10 +154,10 @@ class DefaultStudentSeeder extends Seeder
             // Attach to section
             $student->section()->attach($sectionId);
 
-            // Attach to courses
+            // Attach to courses with provided enrollment_date if available
             foreach ($courses as $courseId) {
                 $student->courses()->attach($courseId, [
-                    'enrollment_date' => now()->format('Y-m-d'),
+                    'enrollment_date' => $enrollmentDate ?? now()->format('Y-m-d'),
                     'status' => 'active',
                 ]);
             }
