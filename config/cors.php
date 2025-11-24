@@ -19,7 +19,17 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    // IMPORTANT: When sending cookies or credentials from the frontend (e.g. Laravel Sanctum),
+    // you must NOT use '*' for `allowed_origins`. Provide explicit origins used by your frontend.
+    'allowed_origins' => [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:5174',
+        'http://127.0.0.1:5174',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        // Add other frontend origins here if needed
+    ],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +39,7 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    // Must be true to allow cookies/credentialed requests from browser
+    'supports_credentials' => true,
 
 ];
