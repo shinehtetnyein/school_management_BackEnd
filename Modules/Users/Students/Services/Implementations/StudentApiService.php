@@ -22,14 +22,36 @@ class StudentApiService implements StudentApiServiceInterface
             ->get();
     }
 
-    public function createStudent(array $data)
-    {
-        // Ensure required fields for new schema
-        $data['role'] = Role::STUDENT->value;
-        $user = User::create($data);
-        $user->assignRoleEnum(Role::STUDENT);
-        return $user;
+public function createStudent(array $data)
+{
+    $data['role'] = Role::STUDENT->value;
+
+    // Create the student user
+    $user = User::create($data);
+    $user->assignRoleEnum(Role::STUDENT);
+
+    // Attach relationships (1 course, 1 section, 1 subject)
+    if (isset($data['course_id'])) {
+        $user->courses()->sync([$data['course_id']]);
     }
+
+    if (isset($data['section_id'])) {
+        $user->section()->sync([$data['section_id']]);
+    }
+
+    if (isset($data['subject_id'])) {
+        $user->subjects()->sync([$data['subject_id']]);
+    }
+
+     if (!empty($data['classroom_id'])) {
+        $user->classroom()->sync([$data['classroom_id']]);
+    }
+
+
+    return $user;
+}
+
+
 
     public function getStudentById($id)
     {

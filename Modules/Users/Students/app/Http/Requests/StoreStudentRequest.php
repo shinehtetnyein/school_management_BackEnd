@@ -18,15 +18,26 @@ class StoreStudentRequest extends FormRequest
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'first_name' => 'sometimes|string|max:255',
-            'last_name' => 'sometimes|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-            'phone_no' => 'sometimes|string|max:20',
-            'status' => 'sometimes|in:active,inactive,suspended',
-        ];
-    }
+{
+    return [
+        'first_name'       => 'sometimes|string|max:255',
+        'last_name'        => 'sometimes|string|max:255',
+        'email'            => 'sometimes|email|unique:users,email,' . $this->id,
+        'password'         => 'sometimes|string|min:8',
+        'phone_no'         => 'sometimes|string|max:20',
+        'date_of_birth'    => 'sometimes|date|before:today',
+        'profile_photo'    => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'nrc'              => 'sometimes|nullable|string|max:50',
+        'religion'         => 'sometimes|nullable|string|max:100',
+        'mother_tongue'    => 'sometimes|nullable|string|max:100',
+        'language'         => 'sometimes|nullable|string|max:100',
+        'gender'           => 'sometimes|nullable|in:male,female,other',
+        'course_id'        => 'sometimes|exists:courses,id',
+        'subject_id'       => 'sometimes|exists:subjects,id',
+        'section_id'       => 'sometimes|exists:sections,id',
+        'classroom_id'     => 'sometimes|exists:classrooms,id',
+        'status'           => 'sometimes|in:active,inactive,suspended',
+    ];
+}
+
 }
