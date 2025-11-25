@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Courses\Models\Course;
-use Modules\Results\Models\Result;
+use Modules\Course\app\Models\Course;
+use Modules\Results\app\Models\Result;
 use Carbon\Carbon;
 
 class Exam extends Model

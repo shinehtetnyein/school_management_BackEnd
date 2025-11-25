@@ -3,46 +3,47 @@ namespace Modules\ClassRoom\app\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Modules\ClassRoom\app\Models\Section;
+use Modules\ClassRoom\Services\SectionApiServiceInterface;
+use Modules\ClassRoom\app\Http\Requests\StoreSectionRequest;
+use Modules\ClassRoom\app\Http\Requests\UpdateSectionRequest;
+use Modules\ClassRoom\app\Http\Resources\SectionResource;
 
 class SectionController extends Controller
 {
+    protected SectionApiServiceInterface $sectionService;
+
+    public function __construct(SectionApiServiceInterface $sectionService)
+    {
+        $this->sectionService = $sectionService;
+    }
+
     public function index()
     {
-        return Section::all();
+        $sections = $this->sectionService->getAllSections();
+        return SectionResource::collection($sections);
     }
 
     public function show($id)
     {
-        return Section::findOrFail($id);
+        $section = $this->sectionService->getSectionById($id);
+        return new SectionResource($section);
     }
 
-    public function store(Request $request)
+    public function store(StoreSectionRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'classroom_id' => 'required|exists:classroom,id',
-            'status' => 'in:active,inactive',
-        ]);
-        return Section::create($data);
+        $section = $this->sectionService->createSection($request->validated());
+        return new SectionResource($section);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateSectionRequest $request, $id)
     {
-        $section = Section::findOrFail($id);
-        $data = $request->validate([
-            'name' => 'sometimes|string',
-            'classroom_id' => 'sometimes|exists:classroom,id',
-            'status' => 'sometimes|in:active,inactive',
-        ]);
-        $section->update($data);
-        return $section;
+        $section = $this->sectionService->updateSection($id, $request->validated());
+        return new SectionResource($section);
     }
 
     public function destroy($id)
     {
-        $section = Section::findOrFail($id);
-        $section->delete();
-        return response()->json(['message' => 'Section deleted']);
+        $this->sectionService->deleteSection($id);
+        return response()->json(null, 204);
     }
 }

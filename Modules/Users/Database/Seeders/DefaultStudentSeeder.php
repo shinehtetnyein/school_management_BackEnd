@@ -16,6 +16,7 @@ class DefaultStudentSeeder extends Seeder
     {
         $studentsData = [
             [
+                'roll_no'    => 'S1',
                 'first_name' => 'Alice',
                 'last_name' => 'Johnson',
                 'email' => 'alice.johnson@school.com',
@@ -36,6 +37,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [1, 2, 3, 4],
             ],
             [
+                'roll_no'    => 'S2',
                 'first_name' => 'Bob',
                 'last_name' => 'Smith',
                 'email' => 'bob.smith@school.com',
@@ -56,6 +58,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [2, 3, 5, 6],
             ],
             [
+                'roll_no'    => 'S3',
                 'first_name' => 'Carol',
                 'last_name' => 'Williams',
                 'email' => 'carol.williams@school.com',
@@ -76,6 +79,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [1, 4, 7, 8],
             ],
             [
+                'roll_no'    => 'S4',
                 'first_name' => 'David',
                 'last_name' => 'Brown',
                 'email' => 'david.brown@school.com',
@@ -96,6 +100,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [2, 5, 9, 10],
             ],
             [
+                'roll_no'    => 'S5',   
                 'first_name' => 'Emma',
                 'last_name' => 'Davis',
                 'email' => 'emma.davis@school.com',

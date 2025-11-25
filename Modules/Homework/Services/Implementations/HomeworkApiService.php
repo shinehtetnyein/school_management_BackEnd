@@ -3,29 +3,41 @@
 namespace Modules\Homework\Services\Implementations;
 
 use Modules\Homework\Services\HomeworkApiServiceInterface;
-use Modules\Homework\Models\Homework;
+use Modules\Homework\app\Models\Homework;
 
 class HomeworkApiService implements HomeworkApiServiceInterface
 {
     public function list(array $filters = [])
     {
-        $homeworks = Homework::query()->orderBy('id', 'asc')->get()->map(function($hw) {
-            return [
-                'id' => $hw->id,
-                'title' => $hw->title,
-                'created_at' => $hw->created_at,
-                'updated_at' => $hw->updated_at,
-            ];
-        })->toArray();
+        $query = Homework::query();
 
-        return [
-            'total_count' => count($homeworks),
-            'homeworks' => $homeworks
-        ];
+        if (isset($filters['course_id'])) {
+            $query->where('course_id', $filters['course_id']);
+        }
+        
+        return $query->with('course')->orderBy('id', 'asc')->get();
     }
 
     public function create(array $data)
     {
         return Homework::create($data);
+    }
+
+    public function getHomeworkById(int $id)
+    {
+        return Homework::with('course', 'submissions.student')->findOrFail($id);
+    }
+
+    public function updateHomework(int $id, array $data)
+    {
+        $homework = Homework::findOrFail($id);
+        $homework->update($data);
+        return $homework;
+    }
+
+    public function deleteHomework(int $id)
+    {
+        $homework = Homework::findOrFail($id);
+        return $homework->delete();
     }
 }

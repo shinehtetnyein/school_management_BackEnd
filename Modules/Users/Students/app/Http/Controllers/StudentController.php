@@ -200,6 +200,14 @@ class StudentController extends Controller
                 'status' => $r->status ?? null,
             ];
         })->values()->toArray();
+        $parent = null;
+        if ($student->parent) {
+            $parent = [
+                'id' => $student->parent->id,
+                'name' => $student->parent->name,
+                'email' => $student->parent->email,
+            ];
+        }
 
         return [
             'id' => $student->id,
@@ -225,6 +233,7 @@ class StudentController extends Controller
             'classrooms' => $classrooms,
             'sections' => $sections,
             'results' => $results,
+            'parent' => $parent,
         ];
     }
 }

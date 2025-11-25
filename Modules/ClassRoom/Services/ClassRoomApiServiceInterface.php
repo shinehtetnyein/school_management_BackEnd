@@ -4,13 +4,9 @@ namespace Modules\ClassRoom\Services;
 
 interface ClassRoomApiServiceInterface
 {
-    public function list(array $filters = []);
-
-    public function create(array $data);
-
-    public function update(int $id, array $data);
-
-    public function delete(int $id);
-
-    public function find(int $id);
+    public function getAllClassRooms();
+    public function getClassRoomById(int $id);
+    public function createClassRoom(array $data);
+    public function updateClassRoom(int $id, array $data);
+    public function deleteClassRoom(int $id);
 }

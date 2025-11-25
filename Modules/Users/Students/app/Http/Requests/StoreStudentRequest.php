@@ -20,6 +20,8 @@ class StoreStudentRequest extends FormRequest
     public function rules(): array
 {
     return [
+        'roll_no'         => 'sometimes|string|max:50|unique:students,roll_no,' . $this->id,
+        'password'         => 'sometimes|string|min:8',
         'first_name'       => 'sometimes|string|max:255',
         'last_name'        => 'sometimes|string|max:255',
         'email'            => 'sometimes|email|unique:users,email,' . $this->id,
@@ -32,6 +34,7 @@ class StoreStudentRequest extends FormRequest
         'mother_tongue'    => 'sometimes|nullable|string|max:100',
         'language'         => 'sometimes|nullable|string|max:100',
         'gender'           => 'sometimes|nullable|in:male,female,other',
+        'parent_id'        => 'sometimes|exists:users,id',
         'course_id'        => 'sometimes|exists:courses,id',
         'subject_id'       => 'sometimes|exists:subjects,id',
         'section_id'       => 'sometimes|exists:sections,id',

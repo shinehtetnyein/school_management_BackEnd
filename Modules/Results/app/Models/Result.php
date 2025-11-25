@@ -3,6 +3,9 @@
 namespace Modules\Results\app\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Users\User\app\Models\User;
+use Modules\Exams\app\Models\Exam;
+use Modules\Course\app\Models\Course;
 
 class Result extends Model
 {
@@ -17,5 +20,18 @@ class Result extends Model
         'date',
     ];
 
-    // Relationships can be added here
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 }

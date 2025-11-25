@@ -1,34 +1,29 @@
 <?php
 
-namespace Modules\Exams\App\Providers;
+namespace Modules\Exams\app\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Modules\Exams\Services\ExamApiServiceInterface;
-use Modules\Exams\Services\Implementations\ExamApiService;
+use Modules\Exams\Services\ExamApiService;
 
 class ExamsServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register the service provider.
+     *
+     * @return void
      */
-    public function register(): void
+    public function register()
     {
         $this->app->bind(ExamApiServiceInterface::class, ExamApiService::class);
-
     }
 
     /**
-     * Bootstrap any application services.
+     * Boot the application events.
+     *
+     * @return void
      */
-    public function boot(): void
+    public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-
-        Route::prefix('api/v1')
-            ->middleware('api')
-            ->group(function () {
-                require __DIR__ . '/../../routes/api_v1.0.php';
-            });
     }
 }

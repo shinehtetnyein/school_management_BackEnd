@@ -1,0 +1,28 @@
+<?php
+
+namespace Modules\Course\app\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateCourseRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function rules(): array
+    {
+        return [
+            'course_name' => 'sometimes|string|max:255',
+            'description' => 'nullable|string',
+            'category' => 'nullable|string|max:255',
+        ];
+    }
+}

@@ -4,37 +4,37 @@ namespace Modules\Exams\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Exams\App\Models\Exam;
-
+use Modules\Exams\Services\ExamApiServiceInterface;
+use Modules\Exams\app\Http\Requests\StoreExamRequest;
+use Modules\Exams\app\Http\Requests\UpdateExamRequest;
+use Modules\Exams\app\Http\Resources\ExamResource;
+use Modules\Results\app\Http\Resources\ResultResource;
 
 class ExamController extends Controller
 {
+    protected ExamApiServiceInterface $examService;
+
+    public function __construct(ExamApiServiceInterface $examService)
+    {
+        $this->examService = $examService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $exams = Exam::get()->map(function($exam) {
-            return [
-                'id' => $exam->id,
-                'title' => $exam->title ?? null,
-                'created_at' => $exam->created_at,
-                'updated_at' => $exam->updated_at,
-            ];
-        })->toArray();
-
-        return [
-            'total_count' => count($exams),
-            'exams' => $exams
-        ];
+        $exams = $this->examService->getAllExams();
+        return ExamResource::collection($exams);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreExamRequest $request)
     {
-        return Exam::create($request->validated());
+        $exam = $this->examService->createExam($request->validated());
+        return new ExamResource($exam);
     }
 
     /**
@@ -42,17 +42,17 @@ class ExamController extends Controller
      */
     public function show(string $id)
     {
-        return Exam::findOrFail($id);
+        $exam = $this->examService->getExamById($id);
+        return new ExamResource($exam);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateExamRequest $request, string $id)
     {
-        $exam = Exam::findOrFail($id);
-        $exam->update($request->validated());
-        return $exam;
+        $exam = $this->examService->updateExam($id, $request->validated());
+        return new ExamResource($exam);
     }
 
     /**
@@ -60,7 +60,8 @@ class ExamController extends Controller
      */
     public function destroy(string $id)
     {
-        return Exam::findOrFail($id)->delete();
+        $this->examService->deleteExam($id);
+        return response()->json(null, 204);
     }
 
     /**
@@ -68,34 +69,7 @@ class ExamController extends Controller
      */
     public function getResults(string $id)
     {
-        $exam = Exam::findOrFail($id);
-        return $exam->results()->with('student')->get();
-    }
-
-    /**
-     * Submit an exam
-     */
-    public function submitExam(Request $request, string $id)
-    {
-        $exam = Exam::findOrFail($id);
-        return $exam->submissions()->create($request->validated());
-    }
-
-    /**
-     * Get exam schedule
-     */
-    public function getSchedule(string $id)
-    {
-        $exam = Exam::findOrFail($id);
-        return $exam->schedule;
-    }
-
-    /**
-     * Grade an exam submission
-     */
-    public function gradeExam(Request $request, string $id)
-    {
-        $exam = Exam::findOrFail($id);
-        return $exam->grade($request->validated());
+        $results = $this->examService->getExamResults($id);
+        return ResultResource::collection($results);
     }
 }

@@ -2,8 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Homework\app\Http\Controllers\HomeworkController;
+use Modules\Homework\app\Http\Controllers\StudentHomeworkController;
 
-Route::prefix('api')->group(function () {
-    Route::get('homeworks', [HomeworkController::class, 'index']);
-    Route::post('homeworks', [HomeworkController::class, 'store']);
-});
+Route::apiResource('homeworks', HomeworkController::class);
+Route::apiResource('homework-submissions', StudentHomeworkController::class);

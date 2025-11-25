@@ -4,40 +4,36 @@ namespace Modules\ClassRoom\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\ClassRoom\app\Models\Classroom;
-use Modules\ClassRoom\app\Http\Resources\ClassroomResource;
+use Modules\ClassRoom\Services\ClassRoomApiServiceInterface;
+use Modules\ClassRoom\app\Http\Requests\StoreClassRoomRequest;
+use Modules\ClassRoom\app\Http\Requests\UpdateClassRoomRequest;
+use Modules\ClassRoom\app\Http\Resources\ClassRoomResource;
 
 class ClassRoomApiController extends Controller
 {
+    protected ClassRoomApiServiceInterface $classRoomService;
+
+    public function __construct(ClassRoomApiServiceInterface $classRoomService)
+    {
+        $this->classRoomService = $classRoomService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // Eager load relations and counts to minimize queries
-        $classrooms = Classroom::with([
-            'sections' => function ($q) {
-                $q->withCount('students');
-            },
-            'timetables' => function ($q) {
-                $q->with(['course', 'subject', 'teacher', 'section' => function ($q2) {
-                    $q2->withCount('students');
-                }]);
-            },
-        ])->withCount('students')->get();
-
-        return [
-            'total_count' => $classrooms->count(),
-            'classrooms' => ClassroomResource::collection($classrooms),
-        ];
+        $classRooms = $this->classRoomService->getAllClassRooms();
+        return ClassRoomResource::collection($classRooms);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreClassRoomRequest $request)
     {
-        return Classroom::create($request->validated());
+        $classRoom = $this->classRoomService->createClassRoom($request->validated());
+        return new ClassRoomResource($classRoom);
     }
 
     /**
@@ -45,28 +41,17 @@ class ClassRoomApiController extends Controller
      */
     public function show(string $id)
     {
-        $classroom = Classroom::with([
-            'sections' => function ($q) {
-                $q->withCount('students');
-            },
-            'timetables' => function ($q) {
-                $q->with(['course', 'subject', 'teacher', 'section' => function ($q2) {
-                    $q2->withCount('students');
-                }]);
-            },
-        ])->withCount('students')->findOrFail($id);
-
-        return new ClassroomResource($classroom);
+        $classRoom = $this->classRoomService->getClassRoomById($id);
+        return new ClassRoomResource($classRoom);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateClassRoomRequest $request, string $id)
     {
-        $Classroom = Classroom::findOrFail($id);
-        $Classroom->update($request->validated());
-        return $Classroom;
+        $classRoom = $this->classRoomService->updateClassRoom($id, $request->validated());
+        return new ClassRoomResource($classRoom);
     }
 
     /**
@@ -74,42 +59,7 @@ class ClassRoomApiController extends Controller
      */
     public function destroy(string $id)
     {
-        return Classroom::findOrFail($id)->delete();
-    }
-
-    /**
-     * Get Classroom results
-     */
-    public function getResults(string $id)
-    {
-        $Classroom = Classroom::findOrFail($id);
-        return $Classroom->results()->with('student')->get();
-    }
-
-    /**
-     * Submit an Classroom
-     */
-    public function submitClassroom(Request $request, string $id)
-    {
-        $Classroom = Classroom::findOrFail($id);
-        return $Classroom->submissions()->create($request->validated());
-    }
-
-    /**
-     * Get Classroom schedule
-     */
-    public function getSchedule(string $id)
-    {
-        $Classroom = Classroom::findOrFail($id);
-        return $Classroom->schedule;
-    }
-
-    /**
-     * Grade an Classroom submission
-     */
-    public function gradeClassroom(Request $request, string $id)
-    {
-        $Classroom = Classroom::findOrFail($id);
-        return $Classroom->grade($request->validated());
+        $this->classRoomService->deleteClassRoom($id);
+        return response()->json(null, 204);
     }
 }

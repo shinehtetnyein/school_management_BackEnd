@@ -9,7 +9,7 @@ class ResultApiService implements ResultApiServiceInterface
 {
     public function getAllResults()
     {
-        return Result::all();
+        return Result::with('student', 'exam', 'course')->get();
     }
 
     public function createResult(array $data)
@@ -19,7 +19,7 @@ class ResultApiService implements ResultApiServiceInterface
 
     public function getResultById($id)
     {
-        return Result::findOrFail($id);
+        return Result::with('student', 'exam', 'course')->findOrFail($id);
     }
 
     public function updateResult($id, array $data)
@@ -33,29 +33,5 @@ class ResultApiService implements ResultApiServiceInterface
     {
         $result = Result::findOrFail($id);
         $result->delete();
-    }
-
-    public function find(int $id)
-    {
-        return $this->getResultById($id);
-    }
-
-    public function list(array $filters = [])
-    {
-        $query = Result::query();
-
-        foreach ($filters as $field => $value) {
-            if ($value === null) {
-                continue;
-            }
-
-            if (is_array($value)) {
-                $query->whereIn($field, $value);
-            } else {
-                $query->where($field, $value);
-            }
-        }
-
-        return $query->orderBy('id', 'asc')->get();
     }
 }
