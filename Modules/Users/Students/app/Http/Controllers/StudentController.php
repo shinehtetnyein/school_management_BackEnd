@@ -220,6 +220,7 @@ class StudentController extends Controller
             'last_name' => $student->last_name,
             'date_of_birth' => $student->date_of_birth,
             'profile_photo' => $student->profile_photo,
+            'enrollment_date' => $student->enrollment_date,
             'nrc' => $student->nrc,
             'religion' => $student->religion,
             'mother_tongue' => $student->mother_tongue,

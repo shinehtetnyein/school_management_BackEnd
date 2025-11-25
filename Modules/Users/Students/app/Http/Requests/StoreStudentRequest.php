@@ -27,6 +27,7 @@ class StoreStudentRequest extends FormRequest
         'email'            => 'sometimes|email|unique:users,email,' . $this->id,
         'password'         => 'sometimes|string|min:8',
         'phone_no'         => 'sometimes|string|max:20',
+        'enrollment_date' => 'sometimes|date',
         'date_of_birth'    => 'sometimes|date|before:today',
         'profile_photo'    => 'sometimes|nullable|image|mimes:jpg,jpeg,png|max:2048',
         'nrc'              => 'sometimes|nullable|string|max:50',
