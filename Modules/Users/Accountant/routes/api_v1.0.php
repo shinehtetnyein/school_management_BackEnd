@@ -3,5 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\users\Accountant\app\Http\Controllers\AccountantController;
 
-Route::apiResource('accountants', AccountantController::class)->names('accountant');
+Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+	Route::apiResource('accountants', AccountantController::class)->names('accountant');
+});
 

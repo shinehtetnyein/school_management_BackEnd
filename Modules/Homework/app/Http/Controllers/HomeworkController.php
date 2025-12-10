@@ -5,9 +5,8 @@ namespace Modules\Homework\app\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Homework\Services\HomeworkApiServiceInterface;
-use Modules\Homework\app\Http\Requests\StoreHomeworkRequest;
-use Modules\Homework\app\Http\Requests\UpdateHomeworkRequest;
-use Modules\Homework\app\Http\Resources\HomeworkResource;
+use Modules\Homework\app\Http\Request\HomeworkRequest;
+use Modules\Homework\app\Http\Resource\HomeworkResource;
 
 class HomeworkController extends Controller
 {
@@ -20,31 +19,30 @@ class HomeworkController extends Controller
 
     public function index(Request $request)
     {
-        $homeworks = $this->service->list($request->all());
-        return HomeworkResource::collection($homeworks);
+        $collection = $this->service->list($request->all());
+        return HomeworkResource::collection($collection);
     }
 
-    public function store(StoreHomeworkRequest $request)
+    public function store(HomeworkRequest $request)
     {
-        $homework = $this->service->create($request->validated());
-        return new HomeworkResource($homework);
+        $hw = $this->service->create($request->validated());
+        return new HomeworkResource($hw);
     }
 
     public function show($id)
     {
-        $homework = $this->service->getHomeworkById($id);
-        return new HomeworkResource($homework);
+        return new HomeworkResource($this->service->show((int) $id));
     }
 
-    public function update(UpdateHomeworkRequest $request, $id)
+    public function update(HomeworkRequest $request, $id)
     {
-        $homework = $this->service->updateHomework($id, $request->validated());
-        return new HomeworkResource($homework);
+        $hw = $this->service->update((int)$id, $request->validated());
+        return new HomeworkResource($hw);
     }
 
     public function destroy($id)
     {
-        $this->service->deleteHomework($id);
+        $this->service->delete((int) $id);
         return response()->json(null, 204);
     }
 }

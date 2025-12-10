@@ -227,6 +227,7 @@ class StudentController extends Controller
             'language' => $student->language,
             'gender' => $student->gender,
             'status' => $student->status ?? 'active',
+            'enrollment_date' => $student->enrollment_date,
             'created_at' => $student->created_at,
             'updated_at' => $student->updated_at,
             'courses' => $courses,

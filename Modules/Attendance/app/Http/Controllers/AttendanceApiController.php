@@ -5,9 +5,8 @@ namespace Modules\Attendance\app\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Attendance\Services\AttendanceApiServiceInterface;
-use Modules\Attendance\app\Http\Requests\StoreAttendanceRequest;
-use Modules\Attendance\app\Http\Requests\UpdateAttendanceRequest;
-use Modules\Attendance\app\Http\Resources\AttendanceResource;
+use Modules\Attendance\app\Http\Request\AttendanceRequest;
+use Modules\Attendance\app\Http\Resource\AttendanceResource;
 
 class AttendanceApiController extends Controller
 {
@@ -20,31 +19,30 @@ class AttendanceApiController extends Controller
 
     public function index(Request $request)
     {
-        $attendances = $this->service->list($request->all());
-        return AttendanceResource::collection($attendances);
+        $collection = $this->service->list($request->all());
+        return AttendanceResource::collection($collection);
     }
 
-    public function store(StoreAttendanceRequest $request)
+    public function store(AttendanceRequest $request)
     {
-        $attendance = $this->service->create($request->validated());
-        return new AttendanceResource($attendance);
+        $att = $this->service->create($request->validated());
+        return new AttendanceResource($att);
     }
 
     public function show($id)
     {
-        $attendance = $this->service->getAttendanceById($id);
-        return new AttendanceResource($attendance);
+        return new AttendanceResource($this->service->show((int) $id));
     }
 
-    public function update(UpdateAttendanceRequest $request, $id)
+    public function update(AttendanceRequest $request, $id)
     {
-        $attendance = $this->service->updateAttendance($id, $request->validated());
-        return new AttendanceResource($attendance);
+        $att = $this->service->update((int) $id, $request->validated());
+        return new AttendanceResource($att);
     }
 
     public function destroy($id)
     {
-        $this->service->deleteAttendance($id);
+        $this->service->delete((int) $id);
         return response()->json(null, 204);
     }
 }

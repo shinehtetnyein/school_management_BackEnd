@@ -18,31 +18,31 @@ class ResultController extends Controller
 
     public function index()
     {
-        $results = $this->service->getAllResults();
+        $results = $this->service->list();
         return ResultResource::collection($results);
     }
 
     public function store(ResultRequest $request)
     {
-        $result = $this->service->createResult($request->validated());
+        $result = $this->service->create($request->validated());
         return new ResultResource($result);
     }
 
     public function show($id)
     {
-        $result = $this->service->getResultById($id);
+        $result = $this->service->show((int) $id);
         return new ResultResource($result);
     }
 
     public function update(ResultRequest $request, $id)
     {
-        $result = $this->service->updateResult($id, $request->validated());
+        $result = $this->service->update((int)$id, $request->validated());
         return new ResultResource($result);
     }
 
     public function destroy($id)
     {
-        $this->service->deleteResult($id);
+        $this->service->delete((int)$id);
         return response()->json(null, 204);
     }
 }
