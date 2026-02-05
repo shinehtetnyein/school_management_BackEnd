@@ -3,6 +3,9 @@
 namespace Modules\TimeTable\app\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
+use Modules\TimeTable\Services\TimeTableAuthorizationServiceInterface;
+use Modules\TimeTable\Services\Implementations\TimeTableAuthorizationService as DefaultTimeTableAuthorizationService;
 
 class UpdateTimeTableRequest extends FormRequest
 {
@@ -11,7 +14,32 @@ class UpdateTimeTableRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasRole(['root_admin', 'admin', 'teacher']);
+        // Try FormRequest user first, fallback to the global auth user.
+        $user = $this->user() ?? auth()->user();
+
+        if (app()->bound(TimeTableAuthorizationServiceInterface::class)) {
+            $service = app(TimeTableAuthorizationServiceInterface::class);
+        } else {
+            $service = new DefaultTimeTableAuthorizationService();
+        }
+
+        // Diagnostic logging to help debug authorization issues.
+        try {
+            $userId = optional($user)->id;
+            $hasRoleMethod = is_object($user) && method_exists($user, 'hasRole');
+            $roleCheck = $hasRoleMethod ? ($user->hasRole(['root_admin', 'admin', 'teacher']) ? 'yes' : 'no') : 'no_hasRole_method';
+            Log::debug('TimeTable Update authorize check', [
+                'this_user_id' => $userId,
+                'auth_check' => auth()->check(),
+                'guard' => auth()->getDefaultDriver(),
+                'hasRole_method' => $hasRoleMethod,
+                'role_check_result' => $roleCheck,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('TimeTable Update authorize logging failed: '.$e->getMessage());
+        }
+
+        return $service->authorize($user);
     }
 
     /**

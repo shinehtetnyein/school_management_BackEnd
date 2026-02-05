@@ -201,6 +201,12 @@ class StudentController extends Controller
             ];
         })->values()->toArray();
 
+        // Determine enrollment_date: prefer explicit user field, otherwise derive from first enrolled course pivot
+        $enrollmentDate = $student->enrollment_date ?? null;
+        if (empty($enrollmentDate) && !empty($student->enrolledCourses) && $student->enrolledCourses->first()) {
+            $enrollmentDate = $student->enrolledCourses->first()->pivot->enrollment_date ?? null;
+        }
+
         return [
             'id' => $student->id,
             'uuid' => $student->uuid ?? null,
@@ -218,7 +224,7 @@ class StudentController extends Controller
             'language' => $student->language,
             'gender' => $student->gender,
             'status' => $student->status ?? 'active',
-            'enrollment_date' => $student->enrollment_date,
+            'enrollment_date' => $enrollmentDate,
             'created_at' => $student->created_at,
             'updated_at' => $student->updated_at,
             'courses' => $courses,

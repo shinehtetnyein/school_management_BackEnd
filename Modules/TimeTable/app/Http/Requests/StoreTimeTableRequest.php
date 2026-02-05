@@ -3,15 +3,24 @@
 namespace Modules\TimeTable\app\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Modules\Users\Admin\Services\AdminApiServiceInterface;
 
 class StoreTimeTableRequest extends FormRequest
 {
+        public function __construct(protected AdminApiServiceInterface $adminApiService) {}
+
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+     public function authorize(): bool
     {
-        return auth()->check() && auth()->user()->hasRole(['root_admin', 'admin', 'teacher']);
+        $userId = Auth::user()->id;
+        $admin = $this->adminApiService->show($userId);
+        if (!$admin) {
+            return false;
+        }
+        return true;
     }
 
     /**
