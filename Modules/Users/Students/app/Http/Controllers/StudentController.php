@@ -200,6 +200,14 @@ class StudentController extends Controller
                 'status' => $r->status ?? null,
             ];
         })->values()->toArray();
+        $parent = null;
+        if ($student->parent) {
+            $parent = [
+                'id' => $student->parent->id,
+                'name' => $student->parent->name,
+                'email' => $student->parent->email,
+            ];
+        }
 
         // Determine enrollment_date: prefer explicit user field, otherwise derive from first enrolled course pivot
         $enrollmentDate = $student->enrollment_date ?? null;
@@ -218,6 +226,7 @@ class StudentController extends Controller
             'last_name' => $student->last_name,
             'date_of_birth' => $student->date_of_birth,
             'profile_photo' => $student->profile_photo,
+            'enrollment_date' => $student->enrollment_date,
             'nrc' => $student->nrc,
             'religion' => $student->religion,
             'mother_tongue' => $student->mother_tongue,
@@ -232,6 +241,7 @@ class StudentController extends Controller
             'classrooms' => $classrooms,
             'sections' => $sections,
             'results' => $results,
+            'parent' => $parent,
         ];
     }
 }

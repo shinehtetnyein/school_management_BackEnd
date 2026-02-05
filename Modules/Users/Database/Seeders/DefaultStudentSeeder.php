@@ -16,6 +16,7 @@ class DefaultStudentSeeder extends Seeder
     {
         $studentsData = [
             [
+                'roll_no'    => 'S1',
                 'first_name' => 'Alice',
                 'last_name' => 'Johnson',
                 'roll_no' => 'STU-2001',
@@ -25,6 +26,7 @@ class DefaultStudentSeeder extends Seeder
                 'address' => '123 Main Street',
                 'city' => 'Yangon',
                 'country' => 'Myanmar',
+                'enrollment_date' => '2023-06-01',
                 'date_of_birth' => '2008-05-15',
                 'gender' => 'female',
                 'nrc' => '12/ABCDE(N)123456',
@@ -38,6 +40,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [1, 2, 3, 4],
             ],
             [
+                'roll_no'    => 'S2',
                 'first_name' => 'Bob',
                 'last_name' => 'Smith',
                 'roll_no' => 'STU-2002',
@@ -47,6 +50,7 @@ class DefaultStudentSeeder extends Seeder
                 'address' => '456 Oak Avenue',
                 'city' => 'Mandalay',
                 'country' => 'Myanmar',
+                'enrollment_date' => '2023-06-01',
                 'date_of_birth' => '2008-08-20',
                 'gender' => 'male',
                 'nrc' => '12/FGHIJ(N)234567',
@@ -60,6 +64,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [2, 3, 5, 6],
             ],
             [
+                'roll_no'    => 'S3',
                 'first_name' => 'Carol',
                 'last_name' => 'Williams',
                 'roll_no' => 'STU-2003',
@@ -69,6 +74,7 @@ class DefaultStudentSeeder extends Seeder
                 'address' => '789 Pine Road',
                 'city' => 'Naypyidaw',
                 'country' => 'Myanmar',
+                'enrollment_date' => '2023-06-01',
                 'date_of_birth' => '2008-03-10',
                 'gender' => 'female',
                 'nrc' => '12/KLMNO(N)345678',
@@ -82,6 +88,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [1, 4, 7, 8],
             ],
             [
+                'roll_no'    => 'S4',
                 'first_name' => 'David',
                 'last_name' => 'Brown',
                 'roll_no' => 'STU-2004',
@@ -91,6 +98,7 @@ class DefaultStudentSeeder extends Seeder
                 'address' => '321 Elm Street',
                 'city' => 'Bagan',
                 'country' => 'Myanmar',
+                'enrollment_date' => '2023-06-01',
                 'date_of_birth' => '2008-11-25',
                 'gender' => 'male',
                 'nrc' => '12/PQRST(N)456789',
@@ -104,6 +112,7 @@ class DefaultStudentSeeder extends Seeder
                 'subjects' => [2, 5, 9, 10],
             ],
             [
+                'roll_no'    => 'S5',   
                 'first_name' => 'Emma',
                 'last_name' => 'Davis',
                 'roll_no' => 'STU-2005',
@@ -113,6 +122,7 @@ class DefaultStudentSeeder extends Seeder
                 'address' => '654 Maple Drive',
                 'city' => 'Inle Lake',
                 'country' => 'Myanmar',
+                'enrollment_date' => '2023-06-01',
                 'date_of_birth' => '2008-07-18',
                 'gender' => 'female',
                 'nrc' => '12/UVWXY(N)567890',

@@ -28,6 +28,7 @@ class UpdateStudentRequest extends FormRequest
             'email' => 'sometimes|email|unique:users,email,' . $studentId,
             'roll_no' => 'sometimes|string|unique:users,roll_no,' . $studentId,
             'phone_no' => 'sometimes|string|max:20',
+            'parent_id' => 'sometimes|exists:users,id',
             'status' => 'sometimes|in:active,inactive,suspended',
             'enrollment_date' => 'sometimes|nullable|date',
         ];

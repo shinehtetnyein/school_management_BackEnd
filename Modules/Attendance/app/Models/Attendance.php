@@ -3,8 +3,8 @@
 namespace Modules\Attendance\app\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Modules\Courses\Models\Course;
-use Modules\Users\User\Models\User;
+use Modules\Course\app\Models\Course;
+use Modules\Users\User\app\Models\User;
 
 class Attendance extends Model
 {

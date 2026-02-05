@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Homework\app\Http\Controllers\HomeworkController;
+use Modules\Homework\app\Http\Controllers\StudentHomeworkController;
 
 use App\Console\Enums\Role;
 

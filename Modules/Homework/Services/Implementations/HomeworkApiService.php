@@ -3,7 +3,7 @@
 namespace Modules\Homework\Services\Implementations;
 
 use Modules\Homework\Services\HomeworkApiServiceInterface;
-use Modules\Homework\Models\Homework;
+use Modules\Homework\app\Models\Homework;
 
 class HomeworkApiService implements HomeworkApiServiceInterface
 {

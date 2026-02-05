@@ -36,6 +36,7 @@ class User extends Authenticatable
     const uuid = 'uuid';
     const first_name = 'first_name';
     const last_name = 'last_name';
+    const enrollment_date = 'enrollment_date';
     const roll_no = 'roll_no';
     const nrc = 'nrc';
     const religion = 'religion';
@@ -48,6 +49,7 @@ class User extends Authenticatable
     const last_login_at = 'last_login_at';
 
     protected $fillable = [
+        'parent_id',
         'uuid',
         'roll_no',
         'name',
@@ -58,6 +60,7 @@ class User extends Authenticatable
         'password',
         'role',
         'gender',
+        'enrollment_date',
         'date_of_birth',
         'profile_photo',
         'address',
@@ -86,6 +89,15 @@ class User extends Authenticatable
     ];
 
     // Relationships
+    public function parent()
+    {
+        return $this->belongsTo(User::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(User::class, 'parent_id');
+    }
     public function enrolledCourses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'course_student', 'user_id', 'course_id')

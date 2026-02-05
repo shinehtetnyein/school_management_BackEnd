@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\ClassRoom\app\Http\Resources;
+namespace Modules\Attendance\app\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SectionResource extends JsonResource
+class AttendanceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,12 @@ class SectionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'date' => $this->date,
             'status' => $this->status,
-            'students_count' => $this->whenLoaded('students', $this->students_count),
+            'user' => $this->whenLoaded('user'),
+            'course' => $this->whenLoaded('course'),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

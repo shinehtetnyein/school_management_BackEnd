@@ -1,33 +1,31 @@
 <?php
 
-namespace Modules\ClassRoom\App\Providers;
+namespace Modules\ClassRoom\app\Providers;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Modules\ClassRoom\Services\ClassRoomApiServiceInterface;
-use Modules\ClassRoom\Services\Implementations\ClassRoomApiService;
+use Modules\ClassRoom\Services\SectionApiServiceInterface;
+use Modules\ClassRoom\Services\SectionApiService;
 
 class ClassRoomServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register the service provider.
+     *
+     * @return void
      */
-    public function register(): void
+    public function register()
     {
         $this->app->bind(ClassRoomApiServiceInterface::class, ClassRoomApiService::class);
+        $this->app->bind(SectionApiServiceInterface::class, SectionApiService::class);
     }
 
     /**
-     * Bootstrap any application services.
+     * Boot the application events.
+     *
+     * @return void
      */
-    public function boot(): void
+    public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations');
-
-        Route::prefix('api/v1')
-            ->middleware('api')
-            ->group(function () {
-                require __DIR__ . '/../../routes/api_v1.0.php';
-            });
     }
 }

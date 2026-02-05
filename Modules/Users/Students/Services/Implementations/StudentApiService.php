@@ -12,6 +12,7 @@ class StudentApiService implements StudentApiServiceInterface
         // Use scopeStudents and eager load related academic data for frontend
         return User::students()
             ->with([
+                'parent',
                 'enrolledCourses',
                 'subjects',
                 'classroom',
@@ -68,6 +69,7 @@ public function createStudent(array $data)
     {
         // eager load relations so single request returns related academic data
         $user = User::with([
+            'parent',
             'enrolledCourses',
             'subjects',
             'classroom',
